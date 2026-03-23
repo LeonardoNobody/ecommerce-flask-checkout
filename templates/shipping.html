@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+
+{% block title %}Entrega{% endblock %}
+
+{% block content %}
+<div class="checkout-steps">
+    <div class="progress-step">Carrinho</div>
+    <div class="progress-step">Endereço</div>
+    <div class="progress-step active">Entrega</div>
+    <div class="progress-step">Pagamento</div>
+    <div class="progress-step">Conclusão</div>
+</div>
+
+<h1 class="page-title">Escolha a Entrega</h1>
+<h2 class="section-subtitle">Selecione a modalidade de frete disponível.</h2>
+
+<div class="checkout-grid">
+    <div class="checkout-form">
+        <form method="POST">
+            <h2>Tipo de Entrega</h2>
+
+            <div class="shipping-options">
+                <label class="shipping-box">
+                    <input type="radio" name="shipping_type" value="Padrao" checked onchange="updateShipping(15.90, 'Padrão')">
+                    <div>
+                        <strong>Entrega Padrão</strong>
+                        <p>Prazo estimado: 5 a 7 dias úteis</p>
+                    </div>
+                    <span>R$ 15,90</span>
+                </label>
+
+                <label class="shipping-box">
+                    <input type="radio" name="shipping_type" value="Expressa" onchange="updateShipping(29.90, 'Expressa')">
+                    <div>
+                        <strong>Entrega Expressa</strong>
+                        <p>Prazo estimado: 1 a 2 dias úteis</p>
+                    </div>
+                    <span>R$ 29,90</span>
+                </label>
+            </div>
+
+            <button type="submit" class="btn full">Continuar para pagamento</button>
+        </form>
+    </div>
+
+    <div class="order-summary">
+        <h2>Resumo do Pedido</h2>
+
+        {% for item in cart_items %}
+        <div class="summary-item">
+            <span>{{ item.name }} x{{ item.quantity }}</span>
+            <strong>R$ {{ "%.2f"|format(item.subtotal) }}</strong>
+        </div>
+        {% endfor %}
+
+        <hr>
+
+        <div class="summary-item">
+            <span>Entrega</span>
+            <strong id="shippingPrice">R$ 15,90</strong>
+        </div>
+
+        <div class="summary-total">
+            <span>Total</span>
+            <strong id="finalTotal">R$ {{ "%.2f"|format(total + 15.90) }}</strong>
+        </div>
+    </div>
+</div>
+
+<script>
+    function updateShipping(price, typeName) {
+        const subtotal = parseFloat("{{ total }}");
+        const final = subtotal + price;
+
+        document.getElementById("shippingPrice").textContent =
+            "R$ " + price.toFixed(2).replace(".", ",");
+
+        document.getElementById("finalTotal").textContent =
+            "R$ " + final.toFixed(2).replace(".", ",");
+    }
+</script>
+{% endblock %}

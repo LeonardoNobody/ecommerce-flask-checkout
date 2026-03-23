@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Produtos{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="hero-text">
+        <h1>Bem-vindo à LojaFácil</h1>
+        <p>Um e-commerce desenvolvido em Flask para apresentação acadêmica, com carrinho, checkout e pagamento simulado.</p>
+    </div>
+</section>
+
+<section id="filtro-categorias">
+    <h2 class="section-title">Filtrar por categoria</h2>
+
+    <form method="GET" action="{{ url_for('index') }}" class="filter-form">
+        <select name="category" class="category-select" onchange="this.form.submit()">
+            <option value="">Todas as categorias</option>
+            {% for category in categories %}
+                <option value="{{ category }}" {% if current_category == category %}selected{% endif %}>
+                    {{ category }}
+                </option>
+            {% endfor %}
+        </select>
+
+        {% if current_category %}
+            <a href="{{ url_for('index') }}" class="btn secondary">Limpar filtro</a>
+        {% endif %}
+    </form>
+</section>
+
+<section id="produtos">
+    <h2 class="section-title">
+        {% if current_category %}
+            Produtos da categoria: {{ current_category }}
+        {% else %}
+            Nossos Produtos
+        {% endif %}
+    </h2>
+
+    <div class="products-grid">
+        {% for product in products %}
+        <div class="product-card">
+            <a href="{{ url_for('product_detail', product_id=product.id) }}">
+                <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}">
+            </a>
+
+            <div class="product-info">
+                <span class="product-category">{{ product.category }}</span>
+
+                <h3>
+                    <a href="{{ url_for('product_detail', product_id=product.id) }}">
+                        {{ product.name }}
+                    </a>
+                </h3>
+
+                <p>{{ product.short_description }}</p>
+
+                <span class="price">R$ {{ "%.2f"|format(product.price) }}</span>
+
+                <a href="{{ url_for('add_to_cart', product_id=product.id) }}" class="btn">
+                    Adicionar ao carrinho
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if not products %}
+    <div class="empty-box">
+        <p>Nenhum produto encontrado para essa categoria.</p>
+        <a href="{{ url_for('index') }}" class="btn">Ver todos os produtos</a>
+    </div>
+    {% endif %}
+</section>
+{% endblock %}

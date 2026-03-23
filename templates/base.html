@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}LojaFácil{% endblock %}</title>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+</head>
+
+<body>
+    <header class="site-header">
+        <div class="container nav-wrapper">
+            <a href="{{ url_for('index') }}" class="brand">LojaFácil</a>
+
+            <nav class="main-nav">
+                <a href="{{ url_for('index') }}">Início</a>
+                <a href="{{ url_for('index') }}#produtos">Produtos</a>
+                <a href="{{ url_for('cart') }}" class="cart-nav">
+                    Carrinho
+                    <span class="cart-badge">{{ cart_count | default(0) }}</span>
+                </a>
+            </nav>
+        </div>
+
+
+
+        
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="flash-area">
+                        {% for category, message in messages %}
+                            <div class="flash-message {{ category }}">{{ message }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+</body>
+</html>

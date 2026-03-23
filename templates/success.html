@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Pedido Realizado{% endblock %}
+
+{% block content %}
+<div class="success-page">
+    <div class="success-header">
+        <div class="success-icon">✓</div>
+        <h1>Pedido realizado com sucesso!</h1>
+        <p>Seu pedido foi registrado corretamente no sistema.</p>
+    </div>
+
+    <div class="success-layout">
+        <div class="success-main">
+            <div class="success-card">
+                <h2>Resumo do Pedido</h2>
+
+                <div class="order-info-grid">
+                    <div>
+                        <span class="label">Número do pedido</span>
+                        <strong>#{{ order["order_number"] }}</strong>
+                    </div>
+                    <div>
+                        <span class="label">Data</span>
+                        <strong>{{ order["order_date"] }}</strong>
+                    </div>
+                    <div>
+                        <span class="label">Cliente</span>
+                        <strong>{{ order["customer_name"] }}</strong>
+                    </div>
+                    <div>
+                        <span class="label">E-mail</span>
+                        <strong>{{ order["customer_email"] }}</strong>
+                    </div>
+                </div>
+
+                <div class="address-box">
+                    <span class="label">Endereço de entrega</span>
+                    <p>{{ order["customer_address"] }}</p>
+                </div>
+            </div>
+
+            <div class="success-card">
+    <h2>Pagamento</h2>
+
+    {% if order["payment"]["method"] == "cartao" %}
+        <div class="payment-result approved-box">
+            <p><strong>Método:</strong> Cartão de Crédito</p>
+            <p><strong>Bandeira:</strong> {{ order["payment"]["card_flag"] }}</p>
+            <p><strong>Cartão:</strong> {{ order["payment"]["card_number_masked"] }}</p>
+            <p><strong>Parcelamento:</strong> {{ order["payment"]["installments"] }}</p>
+            <p class="payment-status approved">{{ order["payment"]["status"] }}</p>
+        </div>
+
+    {% elif order["payment"]["method"] == "boleto" %}
+        <div class="payment-result boleto-box">
+            <h3>Boleto Bancário</h3>
+
+            <div class="boleto-sheet">
+                <div class="boleto-row">
+                    <span><strong>Beneficiário:</strong> {{ order["payment"]["beneficiary"] }}</span>
+                    <span><strong>Vencimento:</strong> {{ order["payment"]["due_date"] }}</span>
+                </div>
+
+                <div class="boleto-row">
+                    <span><strong>Pagador:</strong> {{ order["customer_name"] }}</span>
+                    <span><strong>Valor:</strong> R$ {{ "%.2f"|format(order["total"]) }}</span>
+                </div>
+
+                <div class="boleto-row">
+                    <span><strong>Número do pedido:</strong> #{{ order["order_number"] }}</span>
+                </div>
+
+                <div class="barcode-area">
+                    <span class="label">Linha digitável</span>
+                    <div class="barcode-line" id="barcodeLine">{{ order["payment"]["barcode"] }}</div>
+                    <div class="fake-barcode"></div>
+
+                    <button class="btn secondary" type="button" onclick="copyBarcode()">
+                        Copiar código
+                    </button>
+                </div>
+
+                <div class="boleto-alert">
+                    <p>Este boleto é ilustrativo e foi gerado para fins de apresentação acadêmica.</p>
+                    <p>Não possui registro bancário real nem validade para pagamento.</p>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+        </div>
+
+        <aside class="success-sidebar">
+            <div class="success-card summary-sticky">
+                <h2>Total do Pedido</h2>
+                <div class="summary-total-big">
+                    R$ {{ "%.2f"|format(order["total"]) }}
+                </div>
+
+                <a href="{{ url_for('index') }}" class="btn full">Voltar à loja</a>
+            </div>
+        </aside>
+    </div>
+</div>
+
+<script>
+    function copyBarcode() {
+        const barcode = document.getElementById("barcodeLine").innerText;
+        navigator.clipboard.writeText(barcode).then(() => {
+            alert("Código do boleto copiado com sucesso!");
+        });
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
+<div class="product-detail">
+
+    <div class="product-detail-grid">
+
+        <!-- Imagem -->
+        <div class="product-image">
+            <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}">
+        </div>
+
+        <!-- Informações -->
+        <div class="product-info-detail">
+            <span class="product-category">{{ product.category }}</span>
+
+            <h1>{{ product.name }}</h1>
+
+            <p class="product-description">
+                {{ product.description }}
+            </p>
+
+            <div class="price-detail">
+                R$ {{ "%.2f"|format(product.price) }}
+            </div>
+
+            <div class="product-actions">
+                <a href="{{ url_for('add_to_cart', product_id=product.id) }}" class="btn">
+                    Adicionar ao carrinho
+                </a>
+
+                <a href="{{ url_for('address') }}" class="btn secondary">
+                    Comprar agora
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

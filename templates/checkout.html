@@ -1,0 +1,200 @@
+{% extends "base.html" %}
+
+{% block title %}Checkout{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Checkout</h1>
+
+<div class="checkout-grid">
+    <div class="checkout-form">
+        <form method="POST" onsubmit="return validatePayment()">
+            <h2>Dados do Cliente</h2>
+
+            <label for="customer_name">Nome completo</label>
+            <input type="text" id="customer_name" name="customer_name" required>
+
+            <label for="customer_email">E-mail</label>
+            <input type="email" id="customer_email" name="customer_email" required>
+
+            <label for="customer_address">Endereço</label>
+            <textarea id="customer_address" name="customer_address" rows="4" required></textarea>
+
+            <h2>Forma de Pagamento</h2>
+
+            <div class="payment-methods">
+                <label class="radio-box">
+                    <input type="radio" name="payment_method" value="cartao" checked onclick="togglePayment()">
+                    Cartão de Crédito
+                </label>
+
+                <label class="radio-box">
+                    <input type="radio" name="payment_method" value="boleto" onclick="togglePayment()">
+                    Boleto Bancário
+                </label>
+            </div>
+
+            <div id="card-area" class="payment-card-box">
+                <div class="credit-layout">
+                    <div class="credit-preview">
+                        <div class="preview-card">
+                            <div class="preview-chip"></div>
+
+                            <div class="preview-flags">
+                                <i id="flag-visa" class="fa-brands fa-cc-visa"></i>
+                                <i id="flag-mastercard" class="fa-brands fa-cc-mastercard"></i>
+                            </div>
+
+                            <div class="preview-number" id="preview_number">0000 0000 0000 0000</div>
+
+                            <div class="preview-bottom">
+                                <div>
+                                    <span class="preview-label">Nome impresso</span>
+                                    <strong id="preview_name">NOME DO TITULAR</strong>
+                                </div>
+
+                                <div>
+                                    <span class="preview-label">Validade</span>
+                                    <strong id="preview_expiry">MM/AA</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <input type="hidden" name="card_flag" id="card_flag">
+                    </div>
+
+                    <div class="credit-form">
+                        <label for="card_number">Número do Cartão</label>
+                        <input type="text" name="card_number" id="card_number" maxlength="19" placeholder="0000 0000 0000 0000">
+
+                        <label for="card_name">Nome impresso no cartão</label>
+                        <input type="text" name="card_name" id="card_name" placeholder="Nome do titular">
+
+                        <div class="row">
+                            <div>
+                                <label for="card_expiry">Validade</label>
+                                <input type="text" name="card_expiry" id="card_expiry" maxlength="5" placeholder="MM/AA">
+                            </div>
+                            <div>
+                                <label for="card_cvv">Código de verificação</label>
+                                <input type="text" name="card_cvv" id="card_cvv" maxlength="4" placeholder="123">
+                            </div>
+                        </div>
+
+                        <label for="installments">Forma de pagamento</label>
+                        <select name="installments" id="installments">
+                            <option value="">Selecione</option>
+                            <option value="1x sem juros">1x sem juros</option>
+                            <option value="2x sem juros">2x sem juros</option>
+                            <option value="3x sem juros">3x sem juros</option>
+                            <option value="4x sem juros">4x sem juros</option>
+                            <option value="5x sem juros">5x sem juros</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div id="boleto-area" style="display: none;">
+                <div class="boleto-info">
+                    <p>Ao finalizar, um boleto simulado será gerado automaticamente.</p>
+                    <p>O código de barras exibido será apenas ilustrativo para apresentação.</p>
+                </div>
+            </div>
+
+            <button type="submit" class="btn full">Finalizar pedido</button>
+        </form>
+    </div>
+
+    <div class="order-summary">
+        <h2>Resumo do Pedido</h2>
+
+        {% for item in cart_items %}
+        <div class="summary-item">
+            <span>{{ item.name }} x{{ item.quantity }}</span>
+            <strong>R$ {{ "%.2f"|format(item.subtotal) }}</strong>
+        </div>
+        {% endfor %}
+
+        <hr>
+
+        <div class="summary-total">
+            <span>Total</span>
+            <strong>R$ {{ "%.2f"|format(total) }}</strong>
+        </div>
+    </div>
+</div>
+
+<script>
+    function togglePayment() {
+        const selected = document.querySelector('input[name="payment_method"]:checked').value;
+        const cardArea = document.getElementById("card-area");
+        const boletoArea = document.getElementById("boleto-area");
+
+        if (selected === "cartao") {
+            cardArea.style.display = "block";
+            boletoArea.style.display = "none";
+        } else {
+            cardArea.style.display = "none";
+            boletoArea.style.display = "block";
+        }
+    }
+
+    const cardInput = document.getElementById("card_number");
+    const nameInput = document.getElementById("card_name");
+    const expiryInput = document.getElementById("card_expiry");
+    const cvvInput = document.getElementById("card_cvv");
+
+    const previewNumber = document.getElementById("preview_number");
+    const previewName = document.getElementById("preview_name");
+    const previewExpiry = document.getElementById("preview_expiry");
+
+    const flagInput = document.getElementById("card_flag");
+    const visa = document.getElementById("flag-visa");
+    const mastercard = document.getElementById("flag-mastercard");
+
+    if (cardInput) {
+        cardInput.addEventListener("input", function () {
+            let number = this.value.replace(/\D/g, "").substring(0, 16);
+            let formatted = number.replace(/(\d{4})(?=\d)/g, "$1 ").trim();
+            this.value = formatted;
+            previewNumber.textContent = formatted || "0000 0000 0000 0000";
+
+            visa.classList.remove("active");
+            mastercard.classList.remove("active");
+
+            if (number.startsWith("4")) {
+                visa.classList.add("active");
+                flagInput.value = "Visa";
+            }
+            else if (/^5[1-5]/.test(number)) {
+                mastercard.classList.add("active");
+                flagInput.value = "Mastercard";
+            }
+        });
+    }
+
+    if (nameInput) {
+        nameInput.addEventListener("input", function () {
+            previewName.textContent = this.value.trim().toUpperCase() || "NOME DO TITULAR";
+        });
+    }
+
+    if (expiryInput) {
+        expiryInput.addEventListener("input", function () {
+            let value = this.value.replace(/\D/g, "").substring(0, 4);
+            if (value.length > 2) {
+                value = value.substring(0, 2) + "/" + value.substring(2);
+            }
+            this.value = value;
+            previewExpiry.textContent = value || "MM/AA";
+        });
+    }
+
+    if (cvvInput) {
+        cvvInput.addEventListener("input", function () {
+            this.value = this.value.replace(/\D/g, "").substring(0, 4);
+        });
+    }
+
+    window.addEventListener("load", togglePayment);
+</script>
+{% endblock %}
