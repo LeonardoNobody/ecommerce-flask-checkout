@@ -113,24 +113,15 @@ body {
 
 .checkout-progress {
     display: flex;
-    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
     gap: 12px;
-    margin: 8px 0 28px;
+    margin: 10px 0 28px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
 }
 
-.progress-step {
-    padding: 10px 16px;
-    border-radius: 999px;
-    background: #e2e8f0;
-    color: #475569;
-    font-size: 14px;
-    font-weight: 700;
-}
 
-.progress-step.active {
-    background: var(--primary);
-    color: white;
-}
 
 .checkout-grid {
     display: grid;
@@ -512,7 +503,7 @@ body {
 .product-card img {
     width: 100%;
     height: 220px;
-    object-fit: contain;
+    object-fit: cover;
     background: #f8fafc;
 }
 
@@ -595,14 +586,9 @@ body {
         grid-template-columns: 1fr;
     }
 
-    .checkout-progress {
-        gap: 8px;
-    }
+   
 
-    .progress-step {
-        font-size: 12px;
-        padding: 8px 12px;
-    }
+    
 }
 
 @media (max-width: 480px) {
@@ -660,4 +646,144 @@ body {
         );
 }
 
+.products-grid img,
+.product-card img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+.product-detail img {
+    width: 100%;
+    max-height: 400px;
+    object-fit: contain;
+}
+
+.hero img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+}
+
+.cart-image-box {
+    width: 180px;
+    height: 140px;
+    background: #f8fafc;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    overflow: hidden;
+}
+
+.cart-image-box img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+}
+
+
+.checkout-stepper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0;
+    margin: 12px 0 32px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+}
+
+.step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 110px;
+    flex-shrink: 0;
+    text-align: center;
+}
+
+.step-circle {
+    width: 42px;
+    height: 42px;
+    border-radius: 999px;
+    background: #dbe3ee;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 15px;
+    transition: 0.2s ease;
+    border: 2px solid transparent;
+}
+
+.step-label {
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #475569;
+    transition: 0.2s ease;
+}
+
+.step-line {
+    flex: 1;
+    height: 3px;
+    background: #dbe3ee;
+    border-radius: 999px;
+    min-width: 40px;
+    margin: 0 8px;
+    margin-bottom: 24px;
+}
+
+.step.active .step-circle {
+    background: #2563eb;
+    color: white;
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.22);
+}
+
+.step.active .step-label {
+    color: #0f172a;
+}
+
+.step.completed .step-circle {
+    background: #22c55e;
+    color: white;
+}
+
+.step.completed .step-label {
+    color: #0f172a;
+}
+
+.step-line.completed {
+    background: #22c55e;
+}
+
+@media (max-width: 768px) {
+    .checkout-stepper {
+        gap: 0;
+        overflow-x: auto;
+        justify-content: flex-start;
+    }
+
+    .step {
+        min-width: 90px;
+    }
+
+    .step-circle {
+        width: 36px;
+        height: 36px;
+        font-size: 13px;
+    }
+
+    .step-label {
+        font-size: 12px;
+    }
+
+    .step-line {
+        min-width: 28px;
+        margin: 0 6px 22px;
+    }
+}
 

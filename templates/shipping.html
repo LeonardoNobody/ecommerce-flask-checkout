@@ -3,12 +3,35 @@
 {% block title %}Entrega{% endblock %}
 
 {% block content %}
-<div class="checkout-steps">
-    <div class="progress-step">Carrinho</div>
-    <div class="progress-step">Endereço</div>
-    <div class="progress-step active">Entrega</div>
-    <div class="progress-step">Pagamento</div>
-    <div class="progress-step">Conclusão</div>
+<div class="checkout-stepper">
+    <div class="step {% if current_step in ['address', 'shipping', 'payment', 'success'] %}completed{% elif current_step == 'cart' %}active{% endif %}">
+        <div class="step-circle">1</div>
+        <div class="step-label">Carrinho</div>
+    </div>
+    <div class="step-line {% if current_step in ['address', 'shipping', 'payment', 'success'] %}completed{% endif %}"></div>
+
+    <div class="step {% if current_step in ['shipping', 'payment', 'success'] %}completed{% elif current_step == 'address' %}active{% endif %}">
+        <div class="step-circle">2</div>
+        <div class="step-label">Endereço</div>
+    </div>
+    <div class="step-line {% if current_step in ['shipping', 'payment', 'success'] %}completed{% endif %}"></div>
+
+    <div class="step {% if current_step in ['payment', 'success'] %}completed{% elif current_step == 'shipping' %}active{% endif %}">
+        <div class="step-circle">3</div>
+        <div class="step-label">Entrega</div>
+    </div>
+    <div class="step-line {% if current_step in ['payment', 'success'] %}completed{% endif %}"></div>
+
+    <div class="step {% if current_step in ['success'] %}completed{% elif current_step == 'payment' %}active{% endif %}">
+        <div class="step-circle">4</div>
+        <div class="step-label">Pagamento</div>
+    </div>
+    <div class="step-line {% if current_step in ['success'] %}completed{% endif %}"></div>
+
+    <div class="step {% if current_step == 'success' %}active{% endif %}">
+        <div class="step-circle">5</div>
+        <div class="step-label">Conclusão</div>
+    </div>
 </div>
 
 <h1 class="page-title">Escolha a Entrega</h1>

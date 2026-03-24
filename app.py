@@ -1,9 +1,16 @@
+from werkzeug.security import generate_password_hash, check_password_hash
+from config import Config
+from extensions import db
 from flask import Flask, render_template, session, redirect, url_for, request, flash
 from datetime import datetime, timedelta
 import random
 
 app = Flask(__name__)
+app.config.from_object(Config)
 app.secret_key = "chave_secreta_ecommerce_faculdade"
+
+db.init_app(app)
+from models import User
 
 PRODUCTS = [
     {
@@ -456,6 +463,82 @@ def payment():
         shipping_price=shipping_price,
         current_step="payment"
     )
+
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    cart_count = sum(session.get("cart", {}).values())
+
+    if request.method == "POST":
+        name = request.form.get("name", "").strip()
+        email = request.form.get("email", "").strip().lower()
+        password = request.form.get("password", "").strip()
+        confirm_password = request.form.get("confirm_password", "").strip()
+
+        if not name or not email or not password or not confirm_password:
+            flash("Preencha todos os campos.", "error")
+            return redirect(url_for("register"))
+
+        if password != confirm_password:
+            flash("As senhas não coincidem.", "error")
+            return redirect(url_for("register"))
+
+        existing_user = User.query.filter_by(email=email).first()
+        if existing_user:
+            flash("Já existe um usuário com esse e-mail.", "error")
+            return redirect(url_for("register"))
+
+        hashed_password = generate_password_hash(password)
+
+        user = User(
+            name=name,
+            email=email,
+            password=hashed_password
+        )
+
+        db.session.add(user)
+        db.session.commit()
+
+        flash("Cadastro realizado com sucesso. Faça login.", "success")
+        return redirect(url_for("login"))
+
+    return render_template("register.html", cart_count=cart_count)
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    cart_count = sum(session.get("cart", {}).values())
+
+    if request.method == "POST":
+        email = request.form.get("email", "").strip().lower()
+        password = request.form.get("password", "").strip()
+
+        if not email or not password:
+            flash("Preencha e-mail e senha.", "error")
+            return redirect(url_for("login"))
+
+        user = User.query.filter_by(email=email).first()
+
+        if not user or not check_password_hash(user.password, password):
+            flash("E-mail ou senha inválidos.", "error")
+            return redirect(url_for("login"))
+
+        session["user_id"] = user.id
+        session["user_name"] = user.name
+
+        flash(f"Bem-vindo, {user.name}!", "success")
+        return redirect(url_for("index"))
+
+    return render_template("login.html", cart_count=cart_count)
+
+
+@app.route("/logout")
+def logout():
+    session.pop("user_id", None)
+    session.pop("user_name", None)
+    flash("Você saiu da sua conta.", "success")
+    return redirect(url_for("index"))
+
 
 
 if __name__ == "__main__":
