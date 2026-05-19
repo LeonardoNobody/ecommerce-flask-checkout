@@ -47,12 +47,12 @@
 
             <div class="payment-methods">
                 <label class="radio-box">
-                    <input type="radio" name="payment_method" value="cartao" checked onclick="togglePayment()">
+                    <input type="radio" name="payment_method" value="cartao" {% if checkout_defaults.preferred_payment != 'boleto' %}checked{% endif %} onclick="togglePayment()">
                     Cartão de Crédito
                 </label>
 
                 <label class="radio-box">
-                    <input type="radio" name="payment_method" value="boleto" onclick="togglePayment()">
+                    <input type="radio" name="payment_method" value="boleto" {% if checkout_defaults.preferred_payment == 'boleto' %}checked{% endif %} onclick="togglePayment()">
                     Boleto Bancário
                 </label>
             </div>
@@ -106,7 +106,7 @@
                     </div>
                 </div>
 
-                <input type="hidden" name="card_flag" id="card_flag">
+                <input type="hidden" name="card_flag" id="card_flag" value="{{ checkout_defaults.card_flag }}">
             </div>
 
                     <div class="credit-form">
@@ -117,6 +117,7 @@
                             id="card_number"
                             maxlength="19"
                             placeholder="Digite o número do cartão"
+                            value="{{ checkout_defaults.card_number_masked }}"
                             autocomplete="cc-number"
                         >
 
@@ -126,6 +127,7 @@
                             name="card_name"
                             id="card_name"
                             placeholder="Nome do titular"
+                            value="{{ checkout_defaults.card_name }}"
                             autocomplete="cc-name"
                         >
 
@@ -138,6 +140,7 @@
                                     id="card_expiry"
                                     maxlength="5"
                                     placeholder="MM/AA"
+                                    value="{{ checkout_defaults.card_expiry }}"
                                     autocomplete="cc-exp"
                                 >
                             </div>
@@ -172,6 +175,16 @@
                 <p>O código de barras exibido será apenas ilustrativo para apresentação acadêmica.</p>
             </div>
 
+            <label class="save-checkout-option" id="save-card-option">
+                <input type="checkbox" name="save_card" value="1" {% if not checkout_defaults.card_number_masked %}checked{% endif %}>
+                <span>Salvar este cartão para próximas compras</span>
+            </label>
+
+            <label class="save-checkout-option" id="save-payment-option">
+                <input type="checkbox" name="save_payment" value="1" {% if checkout_defaults.preferred_payment == 'boleto' %}checked{% endif %}>
+                <span>Salvar a forma de pagamento escolhida como preferida</span>
+            </label>
+
             <button type="submit" class="btn full">Finalizar pedido</button>
         </form>
     </div>
@@ -187,6 +200,13 @@
         {% endfor %}
 
         <hr>
+
+        {% if active_coupon %}
+        <div class="summary-item coupon-line">
+            <span>Cupom {{ active_coupon.code }}</span>
+            <strong>- R$ {{ "%.2f"|format(coupon_discount) }}</strong>
+        </div>
+        {% endif %}
 
         <div class="summary-item">
             <span>Entrega</span>
@@ -210,9 +230,13 @@
         if (selected === "cartao") {
             cardArea.style.display = "block";
             boletoArea.style.display = "none";
+            document.getElementById("save-card-option").style.display = "flex";
+            document.getElementById("save-payment-option").style.display = "none";
         } else {
             cardArea.style.display = "none";
             boletoArea.style.display = "block";
+            document.getElementById("save-card-option").style.display = "none";
+            document.getElementById("save-payment-option").style.display = "flex";
         }
     }
 
@@ -350,5 +374,24 @@
     }
 
     window.addEventListener("load", togglePayment);
+    window.addEventListener("load", function () {
+        if (nameInput?.value) {
+            const value = nameInput.value.trim().toUpperCase();
+            previewName.textContent = value;
+            previewSignature.textContent = value;
+        }
+        if (expiryInput?.value) {
+            previewExpiry.textContent = expiryInput.value;
+        }
+        if (cardInput?.value) {
+            previewNumber.textContent = cardInput.value;
+        }
+        if (flagInput?.value === "Visa") {
+            visa.classList.add("active");
+        }
+        if (flagInput?.value === "Mastercard") {
+            mastercard.classList.add("active");
+        }
+    });
 </script>
 {% endblock %}

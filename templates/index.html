@@ -1,46 +1,191 @@
 {% extends "base.html" %}
 
-{% block title %}Produtos{% endblock %}
+{% block title %}LojaF&aacute;cil - &Oacute;culos, Lentes e Acess&oacute;rios{% endblock %}
 
 {% block content %}
-<section class="hero">
-    <div class="hero-text">
-        <h1>Bem-vindo à LojaFácil</h1>
-        <p>Um e-commerce desenvolvido em Flask para apresentação acadêmica, com carrinho, checkout e pagamento simulado.</p>
+<section class="store-hero optical-hero">
+    <div class="hero-copy">
+        <span class="hero-kicker">Curadoria &oacute;ptica premium</span>
+        <h1>Encontre o &oacute;culos certo para o seu rosto, rotina e estilo.</h1>
+        <p>Arma&ccedil;&otilde;es, solares, esportivos, tecnologia vest&iacute;vel e acess&oacute;rios de cuidado selecionados para conforto visual no dia a dia.</p>
+
+        <div class="hero-specs">
+            <span><i class="fas fa-ruler-combined"></i> Guia de ajuste</span>
+            <span><i class="fas fa-sun"></i> Lentes solares</span>
+            <span><i class="fas fa-shield-halved"></i> Compra protegida</span>
+        </div>
+
+        <div class="hero-price">R$ {{ "%.2f"|format(spotlight_product.price) }}</div>
+        <span class="hero-note">Destaque da vitrine: {{ spotlight_product.name }}</span>
+        <a href="{{ url_for('product_detail', product_id=spotlight_product.id) }}#avaliacoes" class="rating-row rating-link">
+            <span class="stars">★★★★★</span>
+            <strong>{{ spotlight_product.review_summary.average }}</strong>
+            <span>{{ spotlight_product.review_summary.count }} avalia&ccedil;&otilde;es</span>
+        </a>
+        <div class="hero-actions">
+            <a href="{{ url_for('product_detail', product_id=spotlight_product.id) }}" class="btn">Ver detalhes</a>
+            <a href="{{ url_for('buy_now', product_id=spotlight_product.id) }}" class="btn secondary">Comprar agora</a>
+        </div>
+    </div>
+    <div class="hero-product optical-showcase">
+        <span class="showcase-label">Modelo em destaque</span>
+        <img src="{{ url_for('static', filename='images/' + spotlight_product.image) }}" alt="{{ spotlight_product.name }}">
+        <div class="showcase-meta">
+            <span>Conforto</span>
+            <span>Estilo</span>
+            <span>Tecnologia</span>
+        </div>
     </div>
 </section>
 
-<section id="filtro-categorias">
-    <h2 class="section-title">Filtrar por categoria</h2>
-
-    <form method="GET" action="{{ url_for('index') }}" class="filter-form">
-        <select name="category" class="category-select" onchange="this.form.submit()">
-            <option value="">Todas as categorias</option>
+<section class="store-search-panel">
+    <form method="GET" action="{{ url_for('index') }}" class="store-search">
+        <input
+            type="search"
+            name="q"
+            placeholder="Busque por Wayfarer, Aviator, flanela, lente, acess&oacute;rio..."
+            value="{{ search_query or '' }}"
+        >
+        <select name="category">
+            <option value="">Todos os departamentos</option>
             {% for category in categories %}
-                <option value="{{ category }}" {% if current_category == category %}selected{% endif %}>
-                    {{ category }}
-                </option>
+                <option value="{{ category }}" {% if current_category == category %}selected{% endif %}>{{ category }}</option>
             {% endfor %}
         </select>
-
-        {% if current_category %}
-            <a href="{{ url_for('index') }}" class="btn secondary">Limpar filtro</a>
+        <button type="submit" class="btn">Buscar</button>
+        {% if current_category or search_query %}
+            <a href="{{ url_for('index') }}" class="btn secondary">Limpar</a>
         {% endif %}
     </form>
 </section>
 
+<section class="optical-shortcuts">
+    <a href="{{ url_for('index', category='Solares') }}">
+        <i class="fas fa-sun"></i>
+        <strong>&Oacute;culos solares</strong>
+        <span>Modelos para dirigir, viajar e proteger os olhos com estilo.</span>
+    </a>
+    <a href="{{ url_for('index', category='Armações') }}">
+        <i class="fas fa-glasses"></i>
+        <strong>Arma&ccedil;&otilde;es cl&aacute;ssicas</strong>
+        <span>Modelos atemporais para uso di&aacute;rio.</span>
+    </a>
+    <a href="{{ url_for('index', category='Esportivos') }}">
+        <i class="fas fa-person-running"></i>
+        <strong>Performance</strong>
+        <span>Leveza, firmeza e cobertura para movimento.</span>
+    </a>
+    <a href="{{ url_for('index', category='Tecnologia') }}">
+        <i class="fas fa-microchip"></i>
+        <strong>&Oacute;culos inteligentes</strong>
+        <span>Recursos conectados para uma rotina mais pr&aacute;tica.</span>
+    </a>
+    <a href="{{ url_for('index', category='Acessórios') }}">
+        <i class="fas fa-spray-can-sparkles"></i>
+        <strong>Cuidado com lentes</strong>
+        <span>Limpeza segura para manter a nitidez.</span>
+    </a>
+</section>
+
+<section class="commerce-benefits optical-benefits">
+    <div>
+        <i class="fas fa-medal"></i>
+        <strong>Curadoria especializada</strong>
+        <span>Produtos organizados por uso, estilo e tecnologia.</span>
+    </div>
+    <div>
+        <i class="fas fa-truck-fast"></i>
+        <strong>Entrega acompanhada</strong>
+        <span>Endere&ccedil;o salvo e acompanhamento do pedido.</span>
+    </div>
+    <div>
+        <i class="fas fa-heart"></i>
+        <strong>Favoritos por perfil</strong>
+        <span>Salve modelos e compare antes de comprar.</span>
+    </div>
+    <div>
+        <i class="fas fa-lock"></i>
+        <strong>Compra segura</strong>
+        <span>Checkout estruturado com dados protegidos.</span>
+    </div>
+</section>
+
+<section class="lens-guide">
+    <div class="section-heading">
+        <div>
+            <span class="section-eyebrow">Escolha com mais precis&atilde;o</span>
+            <h2>Compre pelo que seu olho precisa</h2>
+        </div>
+    </div>
+    <div class="lens-guide-grid">
+        <article>
+            <span>01</span>
+            <h3>Uso ao ar livre</h3>
+            <p>Priorize lentes solares, boa cobertura facial e arma&ccedil;&atilde;o firme para dirigir, caminhar ou praticar esportes.</p>
+        </article>
+        <article>
+            <span>02</span>
+            <h3>Rotina urbana</h3>
+            <p>Modelos cl&aacute;ssicos e confort&aacute;veis ajudam a combinar estilo com uso prolongado durante o dia.</p>
+        </article>
+        <article>
+            <span>03</span>
+            <h3>Tecnologia no rosto</h3>
+            <p>&Oacute;culos inteligentes unem design, &aacute;udio, c&acirc;mera e comandos por voz em um acess&oacute;rio cotidiano.</p>
+        </article>
+    </div>
+</section>
+
+<section class="deals-section">
+    <div class="section-heading">
+        <div>
+            <span class="section-eyebrow">Sele&ccedil;&atilde;o da vitrine</span>
+            <h2>Destaques da &oacute;tica</h2>
+        </div>
+        <a href="#produtos">Ver cat&aacute;logo</a>
+    </div>
+
+    <div class="deal-grid">
+        {% for product in deal_products %}
+        <article class="deal-card">
+            <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}">
+            <div>
+                <span>{{ product.category }}</span>
+                <h3>{{ product.name }}</h3>
+                <a href="{{ url_for('product_detail', product_id=product.id) }}#avaliacoes" class="rating-row compact rating-link">
+                    <span class="stars">★★★★★</span>
+                    <strong>{{ product.review_summary.average }}</strong>
+                </a>
+                <strong>R$ {{ "%.2f"|format(product.price) }}</strong>
+                <a href="{{ url_for('product_detail', product_id=product.id) }}">Conferir</a>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+</section>
+
 <section id="produtos">
-    <h2 class="section-title">
-        {% if current_category %}
-            Produtos da categoria: {{ current_category }}
-        {% else %}
-            Nossos Produtos
-        {% endif %}
-    </h2>
+    <div class="section-heading">
+        <div>
+            <span class="section-eyebrow">
+                {% if current_category %}Departamento{% elif search_query %}Busca{% else %}Cat&aacute;logo{% endif %}
+            </span>
+            <h2>
+                {% if current_category %}
+                    {{ current_category }}
+                {% elif search_query %}
+                    Resultado para "{{ search_query }}"
+                {% else %}
+                    Produtos dispon&iacute;veis
+                {% endif %}
+            </h2>
+        </div>
+        <span class="result-count">{{ products|length }} itens</span>
+    </div>
 
     <div class="products-grid">
         {% for product in products %}
-        <div class="product-card">
+        <div class="product-card optical-card">
             <a href="{{ url_for('product_detail', product_id=product.id) }}">
                 <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}">
             </a>
@@ -49,18 +194,50 @@
                 <span class="product-category">{{ product.category }}</span>
 
                 <h3>
-                    <a href="{{ url_for('product_detail', product_id=product.id) }}">
-                        {{ product.name }}
-                    </a>
+                    <a href="{{ url_for('product_detail', product_id=product.id) }}">{{ product.name }}</a>
                 </h3>
 
                 <p>{{ product.short_description }}</p>
 
-                <span class="price">R$ {{ "%.2f"|format(product.price) }}</span>
+                {% if product.variant_count > 1 %}
+                <div class="card-variants" aria-label="{{ product.variant_count }} cores dispon&iacute;veis">
+                    <span>{{ product.variant_count }} cores</span>
+                    <div>
+                        {% for variant in product.variant_swatches %}
+                        <a href="{{ url_for('product_detail', product_id=variant.id) }}" class="{% if variant.active %}active{% endif %}" title="{{ variant.color }}">
+                            <img src="{{ url_for('static', filename='images/' + variant.image) }}" alt="{{ variant.color }}">
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
 
-                <a href="{{ url_for('add_to_cart', product_id=product.id) }}" class="btn">
-                    Adicionar ao carrinho
+                <a href="{{ url_for('product_detail', product_id=product.id) }}#avaliacoes" class="rating-row compact rating-link">
+                    <span class="stars">★★★★★</span>
+                    <strong>{{ product.review_summary.average }}</strong>
+                    <span>{{ product.review_summary.count }} avalia&ccedil;&otilde;es</span>
                 </a>
+
+                <div class="product-spec-row">
+                    <span><i class="fas fa-check"></i> Pronta entrega</span>
+                    <span><i class="fas fa-box-open"></i> Estoque: {{ product.stock }}</span>
+                </div>
+
+                <span class="price">R$ {{ "%.2f"|format(product.price) }}</span>
+                <span class="stock-info">
+                    {% if product.stock > 0 %}
+                        Dispon&iacute;vel para envio
+                    {% else %}
+                        Indispon&iacute;vel
+                    {% endif %}
+                </span>
+
+                <div class="product-actions-list">
+                    <a href="{{ url_for('add_to_cart', product_id=product.id) }}" class="btn" data-add-to-cart>Adicionar</a>
+                    <a href="{{ url_for('toggle_favorite', product_id=product.id) }}" class="btn secondary">
+                        {% if product.id in favorites %}Remover favorito{% else %}Favoritar{% endif %}
+                    </a>
+                </div>
             </div>
         </div>
         {% endfor %}
@@ -68,7 +245,7 @@
 
     {% if not products %}
     <div class="empty-box">
-        <p>Nenhum produto encontrado para essa categoria.</p>
+        <p>Nenhum produto encontrado.</p>
         <a href="{{ url_for('index') }}" class="btn">Ver todos os produtos</a>
     </div>
     {% endif %}

@@ -8,8 +8,28 @@
     <div class="product-detail-grid">
 
         <!-- Imagem -->
-        <div class="product-image">
-            <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}">
+        <div class="product-image product-gallery">
+            <img
+                id="mainProductImage"
+                src="{{ url_for('static', filename='images/' + gallery[0].image) }}"
+                alt="{{ product.name }}"
+            >
+            {% if gallery|length > 1 %}
+            <div class="gallery-thumbs" aria-label="Fotos do produto">
+                {% for item in gallery %}
+                <button
+                    type="button"
+                    class="gallery-thumb {% if loop.first %}active{% endif %}"
+                    data-image="{{ url_for('static', filename='images/' + item.image) }}"
+                    data-label="{{ item.label }}"
+                    aria-label="Ver foto: {{ item.label }}"
+                >
+                    <img src="{{ url_for('static', filename='images/' + item.image) }}" alt="{{ item.label }}">
+                    <span>{{ item.label }}</span>
+                </button>
+                {% endfor %}
+            </div>
+            {% endif %}
         </div>
 
         <!-- Informações -->
@@ -17,6 +37,42 @@
             <span class="product-category">{{ product.category }}</span>
 
             <h1>{{ product.name }}</h1>
+
+            {% if variants|length > 1 %}
+            <div class="product-variants">
+                <div class="variant-heading">
+                    <strong>{{ variants|length }} cores</strong>
+                    {% if active_variant %}
+                        <span>{{ active_variant.color }}</span>
+                    {% endif %}
+                </div>
+                <div class="variant-grid">
+                    {% for variant in variants %}
+                    <a
+                        href="{{ url_for('product_detail', product_id=variant.id) }}"
+                        class="variant-option {% if variant.active %}active{% endif %}"
+                        title="{{ variant.name }}"
+                        aria-label="Ver cor {{ variant.color }}"
+                    >
+                        <img src="{{ url_for('static', filename='images/' + variant.image) }}" alt="{{ variant.name }}">
+                    </a>
+                    {% endfor %}
+                </div>
+                {% if active_variant %}
+                <div class="variant-specs">
+                    <span><strong>Arma&ccedil;&atilde;o</strong> {{ active_variant.frame }}</span>
+                    <span><strong>Lentes</strong> {{ active_variant.lenses }}</span>
+                    <span><strong>Estoque</strong> {{ active_variant.stock }} un.</span>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <a href="#avaliacoes" class="rating-row product-rating rating-link">
+                <span class="stars">★★★★★</span>
+                <strong>{{ review_summary.average }}</strong>
+                <span>{{ review_summary.count }} avaliações de clientes</span>
+            </a>
 
             <p class="product-description">
                 {{ product.description }}
@@ -26,13 +82,25 @@
                 R$ {{ "%.2f"|format(product.price) }}
             </div>
 
+            <p class="stock-info">
+                {% if product.stock > 0 %}
+                    Disponível: {{ product.stock }} unidades em estoque.
+                {% else %}
+                    Produto indisponível no momento.
+                {% endif %}
+            </p>
+
             <div class="product-actions">
-                <a href="{{ url_for('add_to_cart', product_id=product.id) }}" class="btn">
+                <a href="{{ url_for('add_to_cart', product_id=product.id) }}" class="btn" data-add-to-cart>
                     Adicionar ao carrinho
                 </a>
 
-                <a href="{{ url_for('address') }}" class="btn secondary">
+                <a href="{{ url_for('buy_now', product_id=product.id) }}" class="btn secondary">
                     Comprar agora
+                </a>
+
+                <a href="{{ url_for('toggle_favorite', product_id=product.id) }}" class="btn secondary">
+                    {% if product.id in favorites %}Remover favorito{% else %}Favoritar{% endif %}
                 </a>
             </div>
         </div>
@@ -40,4 +108,79 @@
     </div>
 
 </div>
+
+<section class="reviews-section" id="avaliacoes">
+    <div class="section-heading">
+        <div>
+            <span class="section-eyebrow">Opinião de clientes</span>
+            <h2>Avaliações do produto</h2>
+        </div>
+        <span class="result-count">{{ review_summary.count }} avaliações</span>
+    </div>
+
+    <div class="reviews-grid">
+        <div class="review-summary-card">
+            <strong>{{ review_summary.average }}</strong>
+            <div class="stars large">★★★★★</div>
+            <p>Média baseada nas avaliações cadastradas.</p>
+        </div>
+
+        <div class="reviews-list">
+            {% for review in reviews %}
+            <article class="review-card">
+                <div class="review-card-header">
+                    <strong>{{ review.name }}</strong>
+                    <span>{{ "★" * review.rating }}{{ "☆" * (5 - review.rating) }}</span>
+                </div>
+                <p>{{ review.comment }}</p>
+            </article>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="review-form-card">
+        <h3>Escrever avaliação</h3>
+        <form method="POST" action="{{ url_for('add_review', product_id=product.id) }}">
+            <div class="review-form-grid">
+                <div>
+                    <label for="name">Nome</label>
+                    <input type="text" id="name" name="name" value="{{ session.get('user_name', '') }}" placeholder="Seu nome">
+                </div>
+                <div>
+                    <label>Nota</label>
+                    <div class="star-rating-input" aria-label="Escolha uma nota de 1 a 5 estrelas">
+                        <input type="radio" id="rating-5" name="rating" value="5" checked>
+                        <label for="rating-5" title="5 estrelas">★</label>
+                        <input type="radio" id="rating-4" name="rating" value="4">
+                        <label for="rating-4" title="4 estrelas">★</label>
+                        <input type="radio" id="rating-3" name="rating" value="3">
+                        <label for="rating-3" title="3 estrelas">★</label>
+                        <input type="radio" id="rating-2" name="rating" value="2">
+                        <label for="rating-2" title="2 estrelas">★</label>
+                        <input type="radio" id="rating-1" name="rating" value="1">
+                        <label for="rating-1" title="1 estrela">★</label>
+                    </div>
+                </div>
+            </div>
+            <label for="comment">Comentário</label>
+            <textarea id="comment" name="comment" rows="4" placeholder="Conte o que achou do produto" required></textarea>
+            <button type="submit" class="btn">Publicar avaliação</button>
+        </form>
+    </div>
+</section>
+
+<script>
+    document.querySelectorAll('.gallery-thumb').forEach((thumb) => {
+        thumb.addEventListener('click', () => {
+            const mainImage = document.getElementById('mainProductImage');
+            if (!mainImage) return;
+
+            mainImage.src = thumb.dataset.image;
+            mainImage.alt = `${thumb.dataset.label} - {{ product.name }}`;
+
+            document.querySelectorAll('.gallery-thumb').forEach((item) => item.classList.remove('active'));
+            thumb.classList.add('active');
+        });
+    });
+</script>
 {% endblock %}

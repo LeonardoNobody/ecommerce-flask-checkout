@@ -12,23 +12,111 @@
 
 <body>
     <header class="site-header">
-        <div class="container nav-wrapper">
-            <a href="{{ url_for('index') }}" class="brand">LojaFácil</a>
+        <div class="container nav-shell">
+            <div class="nav-top">
+                <a href="{{ url_for('index') }}" class="brand"><span>Loja</span>F&aacute;cil</a>
 
-            <nav class="main-nav">
-                <a href="{{ url_for('index') }}">Início</a>
-                <a href="{{ url_for('index') }}#produtos">Produtos</a>
-                <a href="{{ url_for('cart') }}" class="cart-nav">
-                    Carrinho
-                    <span class="cart-badge">{{ cart_count | default(0) }}</span>
-                </a>
-            </nav>
+                <form method="GET" action="{{ url_for('index') }}" class="nav-search">
+                    <i class="fas fa-search"></i>
+                    <input type="search" name="q" placeholder="Buscar produtos">
+                    <button type="submit">Buscar</button>
+                </form>
+
+                <div class="nav-actions">
+                    <a href="{{ url_for('favorites') }}" class="nav-icon-link">
+                        <i class="fas fa-heart"></i>
+                        <span>Favoritos</span>
+                    </a>
+                    <a href="{{ url_for('cart') }}" class="nav-icon-link cart-nav">
+                        <i class="fas fa-cart-shopping"></i>
+                        <span>Carrinho</span>
+                        <strong class="cart-badge" id="cartBadge">{{ cart_count | default(0) }}</strong>
+                    </a>
+                </div>
+            </div>
+
+            <div class="nav-bottom">
+                <nav class="main-nav">
+                    <a href="{{ url_for('index') }}">In&iacute;cio</a>
+                    <a href="{{ url_for('index') }}#produtos">Produtos</a>
+                    <a href="{{ url_for('orders') if session.get('user_id') else url_for('login') }}">Pedidos</a>
+                    <a href="{{ url_for('profile') if session.get('user_id') else url_for('login') }}">Minha conta</a>
+                </nav>
+
+                {% if session.get("user_id") %}
+                <div class="user-menu">
+                    <a href="{{ url_for('profile') }}" class="user-badge">
+                        <div class="user-avatar">{{ session.get("user_name")[0] | upper }}</div>
+                        <div class="user-info">
+                            <span class="user-greeting">Ol&aacute;,</span>
+                            <strong class="user-name">{{ session.get("user_name") }}</strong>
+                        </div>
+                    </a>
+                    <a href="{{ url_for('logout') }}" class="nav-button logout-button">Sair</a>
+                </div>
+                {% else %}
+                <div class="auth-links">
+                    <a href="{{ url_for('login') }}" class="nav-button ghost-button">Entrar</a>
+                    <a href="{{ url_for('register') }}" class="nav-button primary-button">Cadastrar</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </header>
+
+    <div class="cart-drawer-backdrop {% if show_cart_drawer %}open{% endif %}" id="cartDrawerBackdrop" onclick="closeCartDrawer()"></div>
+    <aside class="cart-drawer {% if show_cart_drawer %}open{% endif %}" id="cartDrawer" aria-label="Resumo do carrinho">
+        <div class="cart-drawer-header">
+            <div>
+                <span>Carrinho</span>
+                <strong id="cartDrawerCount">{{ mini_cart_items|length }} item(ns)</strong>
+            </div>
+            <button type="button" onclick="closeCartDrawer()" aria-label="Fechar carrinho">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
 
+        <div class="cart-drawer-toast" id="cartDrawerToast"></div>
 
+        <div class="cart-drawer-items {% if not mini_cart_items %}empty-hidden{% endif %}" id="cartDrawerItems">
+            {% for item in mini_cart_items %}
+            <div class="cart-drawer-item">
+                <img src="{{ url_for('static', filename='images/' + item.image) }}" alt="{{ item.name }}">
+                <div>
+                    <strong>{{ item.name }}</strong>
+                    <span>{{ item.quantity }} x R$ {{ "%.2f"|format(item.price) }}</span>
+                    <small>Subtotal: R$ {{ "%.2f"|format(item.subtotal) }}</small>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
 
-        
-    </header>
+        <div class="cart-drawer-summary {% if not mini_cart_items %}empty-hidden{% endif %}" id="cartDrawerSummary">
+            <div>
+                <span>Subtotal</span>
+                <strong id="cartDrawerSubtotal">R$ {{ "%.2f"|format(mini_cart_total) }}</strong>
+            </div>
+            <div class="drawer-coupon {% if not mini_active_coupon %}empty-hidden{% endif %}" id="cartDrawerCoupon">
+                <span>Cupom {{ mini_active_coupon.code }}</span>
+                <strong>aplicado</strong>
+            </div>
+            <div class="drawer-total">
+                <span>Total</span>
+                <strong id="cartDrawerTotal">R$ {{ "%.2f"|format(mini_cart_final_total) }}</strong>
+            </div>
+        </div>
+
+        <div class="cart-drawer-actions {% if not mini_cart_items %}empty-hidden{% endif %}" id="cartDrawerActions">
+            <a href="{{ url_for('cart') }}" class="btn secondary full">Ver carrinho</a>
+            <a href="{{ url_for('address') }}" class="btn full">Fechar pedido</a>
+            <span class="drawer-hint">Continue adicionando produtos sem sair desta página.</span>
+        </div>
+        <div class="cart-drawer-empty {% if mini_cart_items %}empty-hidden{% endif %}" id="cartDrawerEmpty">
+            <i class="fas fa-cart-shopping"></i>
+            <strong>Seu carrinho está vazio</strong>
+            <span>Adicione produtos para ver o resumo aqui.</span>
+        </div>
+    </aside>
 
     <main class="main-content">
         <div class="container">
@@ -45,5 +133,82 @@
             {% block content %}{% endblock %}
         </div>
     </main>
+
+    <script>
+        function closeCartDrawer() {
+            document.getElementById("cartDrawer")?.classList.remove("open");
+            document.getElementById("cartDrawerBackdrop")?.classList.remove("open");
+        }
+
+        function openCartDrawer() {
+            document.getElementById("cartDrawer")?.classList.add("open");
+            document.getElementById("cartDrawerBackdrop")?.classList.add("open");
+        }
+
+        function renderCartDrawer(data) {
+            const itemsContainer = document.getElementById("cartDrawerItems");
+            const emptyState = document.getElementById("cartDrawerEmpty");
+            const summary = document.getElementById("cartDrawerSummary");
+            const actions = document.getElementById("cartDrawerActions");
+            const toast = document.getElementById("cartDrawerToast");
+
+            document.getElementById("cartBadge").textContent = data.count;
+            document.getElementById("cartDrawerCount").textContent = `${data.items.length} item(ns)`;
+            document.getElementById("cartDrawerSubtotal").textContent = data.subtotal_formatted;
+            document.getElementById("cartDrawerTotal").textContent = data.final_total_formatted;
+
+            itemsContainer.innerHTML = data.items.map((item) => `
+                <div class="cart-drawer-item">
+                    <img src="/static/images/${item.image}" alt="${item.name}">
+                    <div>
+                        <strong>${item.name}</strong>
+                        <span>${item.quantity} x R$ ${Number(item.price).toFixed(2)}</span>
+                        <small>Subtotal: R$ ${Number(item.subtotal).toFixed(2)}</small>
+                    </div>
+                </div>
+            `).join("");
+
+            const hasItems = data.items.length > 0;
+            itemsContainer.classList.toggle("empty-hidden", !hasItems);
+            emptyState.classList.toggle("empty-hidden", hasItems);
+            summary.classList.toggle("empty-hidden", !hasItems);
+            actions.classList.toggle("empty-hidden", !hasItems);
+
+            const coupon = document.getElementById("cartDrawerCoupon");
+            coupon.classList.toggle("empty-hidden", !data.active_coupon);
+            if (data.active_coupon) {
+                coupon.querySelector("span").textContent = `Cupom ${data.active_coupon.code}`;
+            }
+
+            toast.textContent = data.message || "Carrinho atualizado.";
+            toast.classList.add("show");
+            window.setTimeout(() => toast.classList.remove("show"), 2200);
+        }
+
+        document.addEventListener("click", async (event) => {
+            const addLink = event.target.closest("[data-add-to-cart]");
+            if (!addLink) return;
+
+            event.preventDefault();
+            addLink.classList.add("loading");
+
+            try {
+                const response = await fetch(addLink.href, {
+                    headers: { "X-Requested-With": "XMLHttpRequest" }
+                });
+                const data = await response.json();
+
+                if (!response.ok) {
+                    alert(data.error || "Não foi possível adicionar o produto.");
+                    return;
+                }
+
+                renderCartDrawer(data);
+                openCartDrawer();
+            } finally {
+                addLink.classList.remove("loading");
+            }
+        });
+    </script>
 </body>
 </html>

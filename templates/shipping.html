@@ -78,6 +78,13 @@
 
         <hr>
 
+        {% if active_coupon %}
+        <div class="summary-item coupon-line">
+            <span>Cupom {{ active_coupon.code }}</span>
+            <strong>- R$ {{ "%.2f"|format(coupon_discount) }}</strong>
+        </div>
+        {% endif %}
+
         <div class="summary-item">
             <span>Entrega</span>
             <strong id="shippingPrice">R$ 15,90</strong>

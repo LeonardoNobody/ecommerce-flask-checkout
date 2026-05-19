@@ -43,45 +43,50 @@
             <h2>Dados do Cliente</h2>
 
             <label for="customer_name">Nome completo</label>
-            <input type="text" id="customer_name" name="customer_name" required>
+            <input type="text" id="customer_name" name="customer_name" value="{{ checkout_defaults.customer_name }}" required>
 
             <label for="customer_email">E-mail</label>
-            <input type="email" id="customer_email" name="customer_email" required>
+            <input type="email" id="customer_email" name="customer_email" value="{{ checkout_defaults.customer_email }}" required>
 
             <div class="form-group">
                 <label for="cep">CEP</label>
-                <input type="text" id="cep" name="cep" maxlength="9" placeholder="00000-000" required>
+                <input type="text" id="cep" name="cep" maxlength="9" placeholder="00000-000" value="{{ checkout_defaults.cep }}" required>
             </div>
 
             <div class="form-group">
                 <label for="rua">Rua</label>
-                <input type="text" id="rua" name="rua" required>
+                <input type="text" id="rua" name="rua" value="{{ checkout_defaults.rua }}" required>
             </div>
 
             <div class="form-group">
                 <label for="numero">Número</label>
-                <input type="text" id="numero" name="numero" required>
+                <input type="text" id="numero" name="numero" value="{{ checkout_defaults.numero }}" required>
             </div>
 
             <div class="form-group">
                 <label for="bairro">Bairro</label>
-                <input type="text" id="bairro" name="bairro" required>
+                <input type="text" id="bairro" name="bairro" value="{{ checkout_defaults.bairro }}" required>
             </div>
 
             <div class="form-group">
                 <label for="cidade">Cidade</label>
-                <input type="text" id="cidade" name="cidade" required>
+                <input type="text" id="cidade" name="cidade" value="{{ checkout_defaults.cidade }}" required>
             </div>
 
             <div class="form-group">
                 <label for="estado">Estado</label>
-                <input type="text" id="estado" name="estado" required>
+                <input type="text" id="estado" name="estado" value="{{ checkout_defaults.estado }}" required>
             </div>
 
             <div class="form-group">
                 <label for="complemento">Complemento</label>
-                <input type="text" id="complemento" name="complemento">
+                <input type="text" id="complemento" name="complemento" value="{{ checkout_defaults.complemento }}">
             </div>
+
+            <label class="save-checkout-option">
+                <input type="checkbox" name="save_address" value="1" {% if not checkout_defaults.cep %}checked{% endif %}>
+                <span>Salvar este endereço no meu perfil para próximas compras</span>
+            </label>
 
             <button type="submit" class="btn full">Continuar para entrega</button>
         </form>

@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Favoritos - LojaFácil{% endblock %}
+
+{% block content %}
+<section class="wishlist-header">
+    <div>
+        <span class="section-eyebrow">Minha conta</span>
+        <h1 class="page-title">Itens favoritos</h1>
+        <p class="section-subtitle">Sua lista de desejos para acompanhar ofertas e comprar depois.</p>
+    </div>
+    <div class="wishlist-actions">
+        <a href="{{ url_for('profile') }}" class="btn secondary">Voltar ao perfil</a>
+        <a href="{{ url_for('index') }}#produtos" class="btn">Adicionar produtos</a>
+    </div>
+</section>
+
+<section class="commerce-benefits compact">
+    <div>
+        <i class="fas fa-bell"></i>
+        <strong>Monitorar desejo</strong>
+        <span>Produtos salvos aparecem no perfil</span>
+    </div>
+    <div>
+        <i class="fas fa-cart-plus"></i>
+        <strong>Compra rápida</strong>
+        <span>Adicione direto ao carrinho</span>
+    </div>
+    <div>
+        <i class="fas fa-ticket"></i>
+        <strong>Cupom</strong>
+        <span>Use LOJA10 no carrinho</span>
+    </div>
+</section>
+
+{% if products %}
+<div class="wishlist-grid">
+    {% for product in products %}
+    <article class="wishlist-card">
+        <a href="{{ url_for('product_detail', product_id=product.id) }}" class="wishlist-image">
+            <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}">
+        </a>
+        <div class="wishlist-content">
+            <span class="product-category">{{ product.category }}</span>
+            <h2>
+                <a href="{{ url_for('product_detail', product_id=product.id) }}">{{ product.name }}</a>
+            </h2>
+            <p>{{ product.short_description }}</p>
+            <div class="wishlist-meta">
+                <strong>R$ {{ "%.2f"|format(product.price) }}</strong>
+                <span>{{ product.stock }} em estoque</span>
+            </div>
+            <div class="product-actions-list">
+                <a href="{{ url_for('add_to_cart', product_id=product.id) }}" class="btn" data-add-to-cart>Adicionar ao carrinho</a>
+                <a href="{{ url_for('toggle_favorite', product_id=product.id) }}" class="btn secondary">Remover</a>
+            </div>
+        </div>
+    </article>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-box wishlist-empty">
+    <i class="fas fa-heart"></i>
+    <h2>Sua lista de favoritos está vazia</h2>
+    <p>Favorite produtos na home para montar sua lista de desejos.</p>
+    <a href="{{ url_for('index') }}#produtos" class="btn">Escolher produtos</a>
+</div>
+{% endif %}
+{% endblock %}

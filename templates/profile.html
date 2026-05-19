@@ -1,0 +1,559 @@
+{% extends "base.html" %}
+
+{% block title %}Minha Conta - LojaFácil{% endblock %}
+
+{% block content %}
+<div class="profile-header">
+    <div class="profile-avatar-large">{{ user.name[0] | upper }}</div>
+    <div>
+        <h1 class="page-title">Minha Conta</h1>
+        <p class="section-subtitle">Dados reais da conta e resumo das compras feitas na loja.</p>
+    </div>
+</div>
+
+<div class="profile-grid">
+    <section class="profile-main">
+        <div class="profile-card">
+            <h2>Informações pessoais</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>Nome completo</label>
+                    <p>{{ user.name }}</p>
+                </div>
+                <div class="info-item">
+                    <label>E-mail</label>
+                    <p>{{ user.email }}</p>
+                </div>
+                <div class="info-item">
+                    <label>ID da conta</label>
+                    <p>#{{ user.id }}</p>
+                </div>
+                <div class="info-item">
+                    <label>Conta criada</label>
+                    <p>Cliente cadastrado</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-card">
+            <h2>Ações rápidas</h2>
+            <div class="quick-actions">
+                <a href="{{ url_for('orders') }}" class="action-btn">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>Meus pedidos</span>
+                </a>
+                <a href="{{ url_for('index') }}#produtos" class="action-btn">
+                    <i class="fas fa-store"></i>
+                    <span>Comprar</span>
+                </a>
+                <a href="{{ url_for('cart') }}" class="action-btn">
+                    <i class="fas fa-cart-shopping"></i>
+                    <span>Carrinho</span>
+                </a>
+                <a href="{{ url_for('favorites') }}" class="action-btn">
+                    <i class="fas fa-heart"></i>
+                    <span>Favoritos</span>
+                </a>
+            </div>
+        </div>
+
+        <div class="profile-card">
+            <div class="profile-card-header">
+                <h2>Dados pessoais e endereço</h2>
+                {% if user.phone or user.cep or user.rua %}
+                    <button type="button" class="edit-profile-data" onclick="toggleProfileDataForm()">Editar</button>
+                {% else %}
+                    <span class="saved-status">Checkout rápido</span>
+                {% endif %}
+            </div>
+
+            {% if user.phone or user.cep or user.rua %}
+            <div class="saved-profile-summary" id="savedProfileSummary">
+                <div>
+                    <span>Telefone</span>
+                    <strong>{{ user.phone or "Não informado" }}</strong>
+                </div>
+                <div>
+                    <span>Endereço padrão</span>
+                    <strong>
+                        {% if user.rua %}
+                            {{ user.rua }}, {{ user.numero or "s/n" }}
+                        {% else %}
+                            Não informado
+                        {% endif %}
+                    </strong>
+                    <p>
+                        {% if user.bairro or user.cidade or user.estado %}
+                            {{ user.bairro }} - {{ user.cidade }}/{{ user.estado }}
+                        {% endif %}
+                        {% if user.cep %} | CEP: {{ user.cep }}{% endif %}
+                        {% if user.complemento %} | {{ user.complemento }}{% endif %}
+                    </p>
+                </div>
+            </div>
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('update_profile_preferences') }}" class="profile-preferences-form {% if user.phone or user.cep or user.rua %}collapsed{% endif %}" id="profileDataForm">
+                <h3>Endereço padrão</h3>
+                <div class="profile-form-grid">
+                    <div>
+                        <label for="phone">Telefone</label>
+                        <input type="text" id="phone" name="phone" value="{{ user.phone or '' }}" placeholder="(11) 99999-9999">
+                    </div>
+                    <div>
+                        <label for="cep">CEP</label>
+                        <input type="text" id="cep" name="cep" value="{{ user.cep or '' }}" placeholder="00000-000">
+                    </div>
+                    <div class="wide">
+                        <label for="rua">Rua</label>
+                        <input type="text" id="rua" name="rua" value="{{ user.rua or '' }}">
+                    </div>
+                    <div>
+                        <label for="numero">Número</label>
+                        <input type="text" id="numero" name="numero" value="{{ user.numero or '' }}">
+                    </div>
+                    <div>
+                        <label for="bairro">Bairro</label>
+                        <input type="text" id="bairro" name="bairro" value="{{ user.bairro or '' }}">
+                    </div>
+                    <div>
+                        <label for="cidade">Cidade</label>
+                        <input type="text" id="cidade" name="cidade" value="{{ user.cidade or '' }}">
+                    </div>
+                    <div>
+                        <label for="estado">Estado</label>
+                        <input type="text" id="estado" name="estado" value="{{ user.estado or '' }}">
+                    </div>
+                    <div class="wide">
+                        <label for="complemento">Complemento</label>
+                        <input type="text" id="complemento" name="complemento" value="{{ user.complemento or '' }}">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn">Salvar dados</button>
+            </form>
+        </div>
+
+        <div class="profile-card">
+            <div class="profile-card-header">
+                <h2>Itens favoritos</h2>
+                <a href="{{ url_for('favorites') }}">Ver lista completa</a>
+            </div>
+            {% if favorite_products %}
+            <div class="favorite-preview-grid">
+                {% for product in favorite_products[:3] %}
+                <article class="favorite-preview-card">
+                    <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}">
+                    <div>
+                        <span>{{ product.category }}</span>
+                        <strong>{{ product.name }}</strong>
+                        <p>R$ {{ "%.2f"|format(product.price) }}</p>
+                        <a href="{{ url_for('add_to_cart', product_id=product.id) }}" data-add-to-cart>Adicionar ao carrinho</a>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+            {% else %}
+                <p class="muted">Sua lista de desejos ainda está vazia.</p>
+                <a href="{{ url_for('index') }}#produtos" class="btn">Favoritar produtos</a>
+            {% endif %}
+        </div>
+
+        <div class="profile-card">
+            <h2>Últimos pedidos</h2>
+            {% if orders %}
+                {% for order in orders[:3] %}
+                <div class="recent-order">
+                    <div>
+                        <strong>Pedido #{{ order.order_number }}</strong>
+                        <span>{{ order.created_at.strftime("%d/%m/%Y") }}</span>
+                    </div>
+                    <strong>{{ format_currency(order.total) }}</strong>
+                </div>
+                {% endfor %}
+                <a href="{{ url_for('orders') }}" class="btn secondary full">Ver histórico completo</a>
+            {% else %}
+                <p class="muted">Nenhum pedido realizado ainda.</p>
+                <a href="{{ url_for('index') }}#produtos" class="btn">Ver produtos</a>
+            {% endif %}
+        </div>
+    </section>
+
+    <aside class="profile-sidebar">
+        <div class="profile-card">
+            <h2>Resumo</h2>
+            <div class="status-info">
+                <div class="status-item">
+                    <span class="label">Total de pedidos</span>
+                    <span class="value">{{ orders|length }}</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">Itens favoritos</span>
+                    <span class="value">{{ favorite_products|length }}</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">Total comprado</span>
+                    <span class="value">{{ format_currency(total_spent) }}</span>
+                </div>
+                <div class="status-item">
+                    <span class="label">Status</span>
+                    <span class="value badge">Ativa</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="profile-card">
+            <h2>Segurança</h2>
+            <p class="muted">Senha protegida com hash e sessão de usuário ativa apenas após login.</p>
+            {% if user.card_last4 %}
+            <p class="muted">Cartão salvo para checkout: {{ user.card_flag }} final {{ user.card_last4 }}.</p>
+            {% else %}
+            <p class="muted">Nenhum cartão salvo. Você pode salvar durante uma compra.</p>
+            {% endif %}
+            <a href="{{ url_for('logout') }}" class="btn secondary full">Sair da conta</a>
+        </div>
+    </aside>
+</div>
+
+<style>
+    .profile-header {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+
+    .profile-avatar-large {
+        width: 92px;
+        height: 92px;
+        border-radius: 50%;
+        background: var(--primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 42px;
+        font-weight: 800;
+        flex-shrink: 0;
+    }
+
+    .profile-grid {
+        display: grid;
+        grid-template-columns: 1fr 320px;
+        gap: 24px;
+    }
+
+    .profile-main,
+    .profile-sidebar {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .profile-card {
+        background: var(--card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        padding: 24px;
+    }
+
+    .profile-card h2 {
+        margin: 0 0 18px;
+    }
+
+    .profile-card-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 18px;
+    }
+
+    .profile-card-header h2 {
+        margin: 0;
+    }
+
+    .profile-card-header a {
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 800;
+        font-size: 14px;
+    }
+
+    .saved-status {
+        color: #166534;
+        background: #dcfce7;
+        border-radius: 999px;
+        padding: 6px 10px;
+        font-size: 12px;
+        font-weight: 900;
+    }
+
+    .profile-preferences-form {
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+    }
+
+    .profile-preferences-form.collapsed {
+        display: none;
+    }
+
+    .edit-profile-data {
+        border: 0;
+        border-radius: 999px;
+        background: var(--primary);
+        color: white;
+        padding: 8px 14px;
+        font-weight: 900;
+        cursor: pointer;
+    }
+
+    .saved-profile-summary {
+        display: grid;
+        grid-template-columns: minmax(160px, 220px) 1fr;
+        gap: 14px;
+        padding: 16px;
+        background: #f8fafc;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+    }
+
+    .saved-profile-summary span {
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 900;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+    }
+
+    .saved-profile-summary strong {
+        display: block;
+        color: var(--text);
+    }
+
+    .saved-profile-summary p {
+        margin: 6px 0 0;
+        color: #475569;
+    }
+
+    .profile-preferences-form h3 {
+        margin: 4px 0 0;
+    }
+
+    .profile-form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+    }
+
+    .profile-form-grid .wide {
+        grid-column: 1 / -1;
+    }
+
+    .profile-form-grid label {
+        display: block;
+        font-size: 12px;
+        font-weight: 900;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin-bottom: 6px;
+    }
+
+    .profile-form-grid input,
+    .profile-form-grid select {
+        width: 100%;
+        padding: 12px 13px;
+        border: 1px solid #cbd5e1;
+        border-radius: 12px;
+        font-size: 15px;
+    }
+
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .info-item label,
+    .status-item .label {
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+    }
+
+    .info-item p {
+        margin: 0;
+        font-weight: 700;
+    }
+
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 12px;
+    }
+
+    .action-btn {
+        min-height: 96px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        text-decoration: none;
+        color: var(--text);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: #f8fafc;
+        font-weight: 800;
+    }
+
+    .action-btn i {
+        color: var(--primary);
+        font-size: 24px;
+    }
+
+    .favorite-preview-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 14px;
+    }
+
+    .favorite-preview-card {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+        background: #f8fafc;
+    }
+
+    .favorite-preview-card img {
+        width: 100%;
+        height: 120px;
+        object-fit: contain;
+        background: white;
+        display: block;
+    }
+
+    .favorite-preview-card div {
+        padding: 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .favorite-preview-card span {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+
+    .favorite-preview-card p {
+        margin: 0;
+        font-weight: 800;
+        color: var(--primary);
+    }
+
+    .favorite-preview-card a {
+        color: var(--primary);
+        font-weight: 800;
+        text-decoration: none;
+        font-size: 13px;
+    }
+
+    .recent-order,
+    .status-item {
+        display: flex;
+        justify-content: space-between;
+        gap: 14px;
+        padding: 14px 0;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .recent-order:last-of-type,
+    .status-item:last-child {
+        border-bottom: 0;
+    }
+
+    .recent-order span {
+        display: block;
+        color: var(--muted);
+        margin-top: 4px;
+    }
+
+    .value.badge {
+        background: #dcfce7;
+        color: #166534;
+        padding: 6px 10px;
+        border-radius: 999px;
+        font-weight: 800;
+    }
+
+    .muted {
+        color: var(--muted);
+    }
+
+    @media (max-width: 768px) {
+        .profile-header,
+        .profile-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .profile-header {
+            align-items: flex-start;
+        }
+
+        .info-grid,
+        .profile-form-grid,
+        .saved-profile-summary,
+        .quick-actions {
+            grid-template-columns: 1fr;
+        }
+
+        .profile-form-grid .wide {
+            grid-column: auto;
+        }
+    }
+</style>
+<script>
+    const profileCepInput = document.getElementById("cep");
+
+    profileCepInput?.addEventListener("input", function () {
+        let value = this.value.replace(/\D/g, "").substring(0, 8);
+        if (value.length > 5) {
+            value = value.substring(0, 5) + "-" + value.substring(5);
+        }
+        this.value = value;
+    });
+
+    profileCepInput?.addEventListener("blur", function () {
+        const cep = this.value.replace(/\D/g, "");
+        if (cep.length !== 8) return;
+
+        fetch(`https://viacep.com.br/ws/${cep}/json/`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.erro) {
+                    alert("CEP não encontrado.");
+                    return;
+                }
+
+                document.getElementById("rua").value = data.logradouro || "";
+                document.getElementById("bairro").value = data.bairro || "";
+                document.getElementById("cidade").value = data.localidade || "";
+                document.getElementById("estado").value = data.uf || "";
+            })
+            .catch(() => alert("Erro ao buscar o CEP."));
+    });
+
+    function toggleProfileDataForm() {
+        document.getElementById("profileDataForm")?.classList.toggle("collapsed");
+        document.getElementById("savedProfileSummary")?.classList.toggle("collapsed");
+    }
+</script>
+{% endblock %}

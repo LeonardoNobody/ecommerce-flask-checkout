@@ -1,50 +1,122 @@
 {% extends "base.html" %}
 
-{% block title %}Carrinho{% endblock %}
+{% block title %}Carrinho - LojaFácil{% endblock %}
 
 {% block content %}
-<h1 class="page-title">Seu Carrinho</h1>
+<section class="cart-page-header">
+    <div>
+        <span class="section-eyebrow">Resumo da compra</span>
+        <h1 class="page-title">Seu carrinho</h1>
+        <p class="section-subtitle">Revise quantidades, aplique cupom e avance para a entrega.</p>
+    </div>
+    <a href="{{ url_for('index') }}#produtos" class="btn secondary">Continuar comprando</a>
+</section>
 
 {% if cart_items %}
-<form method="POST" action="{{ url_for('update_cart') }}">
-    <div class="cart-list">
-        {% for item in cart_items %}
-        <div class="cart-item">
-            <div class="cart-image-box">
-                <img src="{{ url_for('static', filename='images/' + item.image) }}" alt="{{ item.name }}">
+<div class="cart-page-grid">
+    <form method="POST" action="{{ url_for('update_cart') }}" class="cart-products-panel">
+        <div class="cart-panel-title">
+            <h2>Produtos selecionados</h2>
+            <span>{{ cart_items|length }} item(ns)</span>
+        </div>
+
+        <div class="cart-list">
+            {% for item in cart_items %}
+            <article class="cart-item">
+                <div class="cart-image-box">
+                    <img src="{{ url_for('static', filename='images/' + item.image) }}" alt="{{ item.name }}">
+                </div>
+
+                <div class="cart-details">
+                    <span class="product-category">{{ item.category }}</span>
+                    <h3>{{ item.name }}</h3>
+                    <p>Preço unitário: <strong>R$ {{ "%.2f"|format(item.price) }}</strong></p>
+                    <p>Estoque disponível: <strong>{{ item.stock }}</strong></p>
+                </div>
+
+                <div class="cart-quantity-box">
+                    <label for="quantity_{{ item.id }}">Quantidade</label>
+                    <input
+                        type="number"
+                        name="quantity_{{ item.id }}"
+                        id="quantity_{{ item.id }}"
+                        value="{{ item.quantity }}"
+                        min="0"
+                        max="{{ item.stock }}"
+                    >
+                    <a class="remove-link" href="{{ url_for('remove_from_cart', product_id=item.id) }}">
+                        Remover
+                    </a>
+                </div>
+
+                <div class="cart-line-total">
+                    <span>Subtotal</span>
+                    <strong>R$ {{ "%.2f"|format(item.subtotal) }}</strong>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+
+        <div class="cart-update-row">
+            <button type="submit" class="btn secondary">Atualizar quantidades</button>
+        </div>
+    </form>
+
+    <aside class="cart-summary">
+        <h2>Resumo do pedido</h2>
+
+        <div class="summary-item">
+            <span>Subtotal</span>
+            <strong>R$ {{ "%.2f"|format(total) }}</strong>
+        </div>
+
+        {% if active_coupon %}
+        <div class="summary-item coupon-line">
+            <span>Cupom {{ active_coupon.code }}</span>
+            <strong>- R$ {{ "%.2f"|format(coupon_discount) }}</strong>
+        </div>
+        {% endif %}
+
+        <div class="summary-total">
+            <span>Total</span>
+            <strong>R$ {{ "%.2f"|format(final_total) }}</strong>
+        </div>
+
+        <form method="POST" action="{{ url_for('apply_coupon') }}" class="coupon-form">
+            <label for="coupon_code">Cupom de desconto</label>
+            <div>
+                <input
+                    type="text"
+                    id="coupon_code"
+                    name="coupon_code"
+                    placeholder="Ex.: LOJA10"
+                    value="{{ active_coupon.code if active_coupon else '' }}"
+                >
+                <button type="submit" class="btn secondary">Aplicar</button>
             </div>
+            <small>Para demonstração, use LOJA10.</small>
+        </form>
 
-            <div class="cart-details">
-                <h3>{{ item.name }}</h3>
-                <p><strong>Categoria:</strong> {{ item.category }}</p>
-                <p><strong>Preço unitário:</strong> R$ {{ "%.2f"|format(item.price) }}</p>
-
-                <label for="quantity_{{ item.id }}">Quantidade:</label>
-                <input type="number" name="quantity_{{ item.id }}" value="{{ item.quantity }}" min="0">
-
-                <p><strong>Subtotal:</strong> R$ {{ "%.2f"|format(item.subtotal) }}</p>
-
-                <a class="remove-link" href="{{ url_for('remove_from_cart', product_id=item.id) }}">
-                    Remover
-                </a>
+        <div class="cart-next-steps">
+            <div>
+                <i class="fas fa-truck-fast"></i>
+                <span>Frete escolhido na próxima etapa</span>
+            </div>
+            <div>
+                <i class="fas fa-shield-halved"></i>
+                <span>Pagamento simulado e seguro</span>
             </div>
         </div>
-        {% endfor %}
-    </div>
 
-    <div class="cart-summary">
-        <h2>Total: R$ {{ "%.2f"|format(total) }}</h2>
-
-        <div class="cart-actions">
-            <button type="submit" class="btn secondary">Atualizar carrinho</button>
-            <a href="{{ url_for('address') }}" class="btn">Finalizar Compra</a>
-        </div>
-    </div>
-</form>
+        <a href="{{ url_for('address') }}" class="btn full">Finalizar compra</a>
+    </aside>
+</div>
 {% else %}
-<div class="empty-box">
-    <p>Seu carrinho está vazio.</p>
-    <a href="{{ url_for('index') }}" class="btn">Voltar para produtos</a>
+<div class="empty-box cart-empty-state">
+    <i class="fas fa-cart-shopping"></i>
+    <h2>Seu carrinho está vazio</h2>
+    <p>Escolha produtos na vitrine e eles aparecerão aqui para revisão.</p>
+    <a href="{{ url_for('index') }}#produtos" class="btn">Voltar para produtos</a>
 </div>
 {% endif %}
 {% endblock %}
