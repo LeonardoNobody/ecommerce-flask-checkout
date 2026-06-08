@@ -1,54 +1,61 @@
-# -E-Commerce-Web-Applicationn-em-python
-Este projeto é uma aplicação web de e-commerce desenvolvida com foco em aprendizado prático de desenvolvimento full stack, simulando um fluxo completo de compra online.  A aplicação permite que usuários visualizem produtos, realizem compras e interajam com um sistema de pagamento simulado, incluindo uma interface dinâmica de cartão de crédito.
+# VistaPrime Ótica
 
+E-commerce acadêmico desenvolvido em Flask para simular uma loja online de ótica, com catálogo de produtos, variações, favoritos, avaliações verificadas, carrinho, checkout, endereço, pagamento simulado e área do usuário.
 
-💡 Funcionalidades
-🛍️ Visualização de produtos
-⚡ Botão "Comprar agora"
-💳 Sistema de pagamento com cartão de crédito (simulado)
-🎨 Cartão interativo:
-Número do cartão em tempo real
-Nome do titular
-Data de validade
-Detecção de bandeira (Visa, Mastercard, etc.)
-Animação de rotação para exibição do CVV
-✅ Validação de formulário antes do pagamento
-🔄 Navegação entre páginas (produto → checkout)
-🧠 Tecnologias utilizadas
-Python (Flask)
-HTML5
-CSS3
-JavaScript
-Bootstrap (para estilização)
-🎯 Objetivo do projeto
+## Funcionalidades
 
-Este projeto foi desenvolvido com o objetivo de:
+- Catálogo de óculos solares, armações, tecnologia e acessórios
+- Página de produto com galeria, ficha técnica, variações de cor e avaliações
+- Carrinho lateral e página de carrinho estilizada
+- Cadastro, login e recuperação de senha simulada
+- Favoritos vinculados ao usuário logado
+- Checkout com endereço, entrega e pagamento simulado
+- Cupom com exibição de desconto em valor e porcentagem
+- Perfil com dados pessoais e endereço padrão
+- Termos de serviço, política de privacidade, FAQ, contato e página institucional
 
-Praticar desenvolvimento web full stack
-Entender o fluxo de um sistema de e-commerce
-Trabalhar com manipulação de DOM e eventos em JavaScript
-Simular integração com sistema de pagamento
-Criar interfaces interativas e modernas
-⚠️ Observações
+## Tecnologias
 
-Este projeto é apenas para fins educacionais.
-Nenhum pagamento real é processado.
+- Python
+- Flask
+- Flask-SQLAlchemy
+- SQLite
+- HTML, CSS e JavaScript
 
+## Rodando localmente
 
-📌 Melhorias futuras
-Integração com banco de dados
-Sistema de autenticação de usuários
-Integração com gateway de pagamento real (Stripe, Mercado Pago)
-Carrinho de compras completo
-Deploy em nuvem (Azure / Render / Railway)
+```bash
+python -m venv venv
+venv\Scripts\python.exe -m pip install -r requirements.txt
+venv\Scripts\python.exe -m flask --app app run --host 127.0.0.1 --port 5000
+```
 
+Acesse:
 
-👨‍💻 Autor
+```text
+http://127.0.0.1:5000
+```
 
-Desenvolvido por Leonardo Rodrigues de Souza
-Estudante de Gestão da Tecnologia da Informação
-Foco em desenvolvimento Full Stack
+## Deploy no Render
 
+Build command:
 
+```bash
+pip install -r requirements.txt
+```
 
-<img width="1899" height="910" alt="image" src="https://github.com/user-attachments/assets/93bb6646-b01d-47b1-a4e0-a84df6bc8e14" />
+Start command:
+
+```bash
+gunicorn app:app
+```
+
+Configure a variável de ambiente:
+
+```text
+SECRET_KEY=uma-chave-segura
+```
+
+## Observação
+
+Projeto criado para fins acadêmicos. Pagamentos, autenticações externas e integrações reais são simulados.

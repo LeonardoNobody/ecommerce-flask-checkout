@@ -47,13 +47,18 @@
 
             <div class="payment-methods">
                 <label class="radio-box">
-                    <input type="radio" name="payment_method" value="cartao" {% if checkout_defaults.preferred_payment != 'boleto' %}checked{% endif %} onclick="togglePayment()">
+                    <input type="radio" name="payment_method" value="cartao" {% if checkout_defaults.preferred_payment not in ['boleto', 'pix'] %}checked{% endif %} onclick="togglePayment()">
                     Cartão de Crédito
                 </label>
 
                 <label class="radio-box">
                     <input type="radio" name="payment_method" value="boleto" {% if checkout_defaults.preferred_payment == 'boleto' %}checked{% endif %} onclick="togglePayment()">
                     Boleto Bancário
+                </label>
+
+                <label class="radio-box">
+                    <input type="radio" name="payment_method" value="pix" {% if checkout_defaults.preferred_payment == 'pix' %}checked{% endif %} onclick="togglePayment()">
+                    Pix
                 </label>
             </div>
 
@@ -171,8 +176,13 @@
             </div>
 
             <div id="boleto-area" class="boleto-info" style="display: none;">
-                <p>Ao finalizar, um boleto simulado será gerado automaticamente.</p>
-                <p>O código de barras exibido será apenas ilustrativo para apresentação acadêmica.</p>
+                <p>Ao finalizar, um boleto ser&aacute; gerado com linha digit&aacute;vel e vencimento.</p>
+                <p>Confirme o pagamento dentro do prazo para manter a reserva do pedido.</p>
+            </div>
+
+            <div id="pix-area" class="boleto-info" style="display: none;">
+                <p>Ao finalizar, uma chave Pix copia e cola ser&aacute; gerada para pagamento imediato.</p>
+                <p>A confirma&ccedil;&atilde;o costuma ser mais r&aacute;pida e ajuda a agilizar a prepara&ccedil;&atilde;o do pedido.</p>
             </div>
 
             <label class="save-checkout-option" id="save-card-option">
@@ -203,9 +213,10 @@
 
         {% if active_coupon %}
         <div class="summary-item coupon-line">
-            <span>Cupom {{ active_coupon.code }}</span>
+            <span>Cupom {{ active_coupon.code }} ({{ active_coupon.percent }}% OFF)</span>
             <strong>- R$ {{ "%.2f"|format(coupon_discount) }}</strong>
         </div>
+        <p class="coupon-saving">Desconto aplicado: R$ {{ "%.2f"|format(coupon_discount) }}</p>
         {% endif %}
 
         <div class="summary-item">
@@ -225,16 +236,25 @@
         const selected = document.querySelector('input[name="payment_method"]:checked').value;
         const cardArea = document.getElementById("card-area");
         const boletoArea = document.getElementById("boleto-area");
+        const pixArea = document.getElementById("pix-area");
         
 
         if (selected === "cartao") {
             cardArea.style.display = "block";
             boletoArea.style.display = "none";
+            pixArea.style.display = "none";
             document.getElementById("save-card-option").style.display = "flex";
             document.getElementById("save-payment-option").style.display = "none";
-        } else {
+        } else if (selected === "boleto") {
             cardArea.style.display = "none";
             boletoArea.style.display = "block";
+            pixArea.style.display = "none";
+            document.getElementById("save-card-option").style.display = "none";
+            document.getElementById("save-payment-option").style.display = "flex";
+        } else {
+            cardArea.style.display = "none";
+            boletoArea.style.display = "none";
+            pixArea.style.display = "block";
             document.getElementById("save-card-option").style.display = "none";
             document.getElementById("save-payment-option").style.display = "flex";
         }
@@ -323,7 +343,7 @@
     function validatePayment() {
         const method = document.querySelector('input[name="payment_method"]:checked').value;
 
-        if (method === "boleto") {
+        if (method === "boleto" || method === "pix") {
             return true;
         }
 
@@ -395,3 +415,4 @@
     });
 </script>
 {% endblock %}
+

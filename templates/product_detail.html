@@ -1,21 +1,21 @@
 {% extends "base.html" %}
 
-{% block title %}{{ product.name }}{% endblock %}
+{% block title %}{{ product.name }} - {{ store_name }}{% endblock %}
 
 {% block content %}
-<div class="product-detail">
+<section class="premium-product-page">
+    <div class="premium-product-layout">
+        <div class="premium-gallery">
+            <div class="gallery-stage">
+                <img
+                    id="mainProductImage"
+                    src="{{ url_for('static', filename='images/' + gallery[0].image) }}"
+                    alt="{{ product.name }}"
+                >
+            </div>
 
-    <div class="product-detail-grid">
-
-        <!-- Imagem -->
-        <div class="product-image product-gallery">
-            <img
-                id="mainProductImage"
-                src="{{ url_for('static', filename='images/' + gallery[0].image) }}"
-                alt="{{ product.name }}"
-            >
             {% if gallery|length > 1 %}
-            <div class="gallery-thumbs" aria-label="Fotos do produto">
+            <div class="gallery-thumbs premium-thumbs" aria-label="Fotos do produto">
                 {% for item in gallery %}
                 <button
                     type="button"
@@ -32,18 +32,29 @@
             {% endif %}
         </div>
 
-        <!-- Informações -->
-        <div class="product-info-detail">
-            <span class="product-category">{{ product.category }}</span>
+        <aside class="product-buy-panel">
+            <div class="product-title-row">
+                <div>
+                    <span class="product-category">{{ product.category }}</span>
+                    <h1>{{ product.name }}</h1>
+                </div>
+                <a href="{{ url_for('toggle_favorite', product_id=product.id) }}" class="favorite-icon-button" aria-label="Favoritar produto">
+                    <i class="{% if product.id in favorites %}fas{% else %}far{% endif %} fa-heart"></i>
+                </a>
+            </div>
 
-            <h1>{{ product.name }}</h1>
+            <a href="#avaliacoes" class="rating-row product-rating rating-link">
+                <span class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+                <strong>{{ review_summary.average }}</strong>
+                <span>{{ review_summary.count }} avalia&ccedil;&otilde;es de clientes</span>
+            </a>
 
             {% if variants|length > 1 %}
-            <div class="product-variants">
+            <div class="product-variants premium-variants">
                 <div class="variant-heading">
                     <strong>{{ variants|length }} cores</strong>
                     {% if active_variant %}
-                        <span>{{ active_variant.color }}</span>
+                    <span>{{ active_variant.color }}</span>
                     {% endif %}
                 </div>
                 <div class="variant-grid">
@@ -58,71 +69,115 @@
                     </a>
                     {% endfor %}
                 </div>
-                {% if active_variant %}
-                <div class="variant-specs">
-                    <span><strong>Arma&ccedil;&atilde;o</strong> {{ active_variant.frame }}</span>
-                    <span><strong>Lentes</strong> {{ active_variant.lenses }}</span>
-                    <span><strong>Estoque</strong> {{ active_variant.stock }} un.</span>
-                </div>
-                {% endif %}
             </div>
             {% endif %}
 
-            <a href="#avaliacoes" class="rating-row product-rating rating-link">
-                <span class="stars">★★★★★</span>
-                <strong>{{ review_summary.average }}</strong>
-                <span>{{ review_summary.count }} avaliações de clientes</span>
-            </a>
+            <div class="selection-summary">
+                {% for label, value in summary_specs %}
+                <div>
+                    <span>{{ label }}</span>
+                    <strong>{{ value }}</strong>
+                </div>
+                {% endfor %}
+            </div>
 
-            <p class="product-description">
-                {{ product.description }}
-            </p>
-
-            <div class="price-detail">
-                R$ {{ "%.2f"|format(product.price) }}
+            <div class="product-price-box">
+                <span>Pre&ccedil;o</span>
+                <strong>R$ {{ "%.2f"|format(product.price) }}</strong>
+                <small>Ou finalize com cart&atilde;o, Pix ou boleto no checkout.</small>
             </div>
 
             <p class="stock-info">
                 {% if product.stock > 0 %}
-                    Disponível: {{ product.stock }} unidades em estoque.
+                    Dispon&iacute;vel para compra.
                 {% else %}
-                    Produto indisponível no momento.
+                    Produto indispon&iacute;vel no momento.
                 {% endif %}
             </p>
 
-            <div class="product-actions">
-                <a href="{{ url_for('add_to_cart', product_id=product.id) }}" class="btn" data-add-to-cart>
+            <div class="product-actions premium-actions">
+                <a href="{{ url_for('add_to_cart', product_id=product.id) }}" class="btn full" data-add-to-cart>
                     Adicionar ao carrinho
                 </a>
-
-                <a href="{{ url_for('buy_now', product_id=product.id) }}" class="btn secondary">
+                <a href="{{ url_for('buy_now', product_id=product.id) }}" class="btn secondary full">
                     Comprar agora
                 </a>
-
-                <a href="{{ url_for('toggle_favorite', product_id=product.id) }}" class="btn secondary">
-                    {% if product.id in favorites %}Remover favorito{% else %}Favoritar{% endif %}
-                </a>
             </div>
-        </div>
 
+            <div class="product-service-list">
+                <span><i class="fas fa-shield-halved"></i> Compra segura</span>
+                <span><i class="fas fa-truck-fast"></i> Frete calculado no checkout</span>
+                <span><i class="fas fa-rotate-left"></i> Troca e devolu&ccedil;&atilde;o com suporte</span>
+                <span><i class="fas fa-headset"></i> Atendimento VistaPrime</span>
+            </div>
+        </aside>
+    </div>
+</section>
+
+<section class="product-story-section">
+    <div class="product-story-copy">
+        <span class="section-eyebrow">Detalhes do produto</span>
+        {% if product.category == "Acessórios" %}
+        <h2>Cuidado para lentes, telas e acessórios delicados</h2>
+        {% else %}
+        <h2>Design, lente e tecnologia em uma compra bem explicada</h2>
+        {% endif %}
+        <p>{{ product.description }}</p>
     </div>
 
-</div>
+    <div class="included-card">
+        <h3>Incluso no pedido</h3>
+        {% for item, description in included_items %}
+        <div>
+            <i class="fas fa-check"></i>
+            <span>
+                <strong>{{ item }}</strong>
+                {{ description }}
+            </span>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="technical-details-section">
+    <div class="section-heading">
+        <div>
+            <span class="section-eyebrow">Especifica&ccedil;&otilde;es</span>
+            <h2>Ficha t&eacute;cnica</h2>
+        </div>
+    </div>
+
+    <div class="technical-accordion">
+        {% for section in detail_sections %}
+        <details {% if loop.first %}open{% endif %}>
+            <summary>{{ section.title }}</summary>
+            <div class="technical-table">
+                {% for label, value in section["items"] %}
+                <div>
+                    <span>{{ label }}</span>
+                    <strong>{{ value }}</strong>
+                </div>
+                {% endfor %}
+            </div>
+        </details>
+        {% endfor %}
+    </div>
+</section>
 
 <section class="reviews-section" id="avaliacoes">
     <div class="section-heading">
         <div>
-            <span class="section-eyebrow">Opinião de clientes</span>
-            <h2>Avaliações do produto</h2>
+            <span class="section-eyebrow">Opini&atilde;o de clientes</span>
+            <h2>Avalia&ccedil;&otilde;es do produto</h2>
         </div>
-        <span class="result-count">{{ review_summary.count }} avaliações</span>
+        <span class="result-count">{{ review_summary.count }} avalia&ccedil;&otilde;es</span>
     </div>
 
     <div class="reviews-grid">
         <div class="review-summary-card">
             <strong>{{ review_summary.average }}</strong>
-            <div class="stars large">★★★★★</div>
-            <p>Média baseada nas avaliações cadastradas.</p>
+            <div class="stars large">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+            <p>M&eacute;dia baseada nas avalia&ccedil;&otilde;es cadastradas.</p>
         </div>
 
         <div class="reviews-list">
@@ -139,7 +194,8 @@
     </div>
 
     <div class="review-form-card">
-        <h3>Escrever avaliação</h3>
+        <h3>Escrever avalia&ccedil;&atilde;o</h3>
+        {% if can_review %}
         <form method="POST" action="{{ url_for('add_review', product_id=product.id) }}">
             <div class="review-form-grid">
                 <div>
@@ -150,22 +206,34 @@
                     <label>Nota</label>
                     <div class="star-rating-input" aria-label="Escolha uma nota de 1 a 5 estrelas">
                         <input type="radio" id="rating-5" name="rating" value="5" checked>
-                        <label for="rating-5" title="5 estrelas">★</label>
+                        <label for="rating-5" title="5 estrelas">&#9733;</label>
                         <input type="radio" id="rating-4" name="rating" value="4">
-                        <label for="rating-4" title="4 estrelas">★</label>
+                        <label for="rating-4" title="4 estrelas">&#9733;</label>
                         <input type="radio" id="rating-3" name="rating" value="3">
-                        <label for="rating-3" title="3 estrelas">★</label>
+                        <label for="rating-3" title="3 estrelas">&#9733;</label>
                         <input type="radio" id="rating-2" name="rating" value="2">
-                        <label for="rating-2" title="2 estrelas">★</label>
+                        <label for="rating-2" title="2 estrelas">&#9733;</label>
                         <input type="radio" id="rating-1" name="rating" value="1">
-                        <label for="rating-1" title="1 estrela">★</label>
+                        <label for="rating-1" title="1 estrela">&#9733;</label>
                     </div>
                 </div>
             </div>
-            <label for="comment">Comentário</label>
+            <label for="comment">Coment&aacute;rio</label>
             <textarea id="comment" name="comment" rows="4" placeholder="Conte o que achou do produto" required></textarea>
-            <button type="submit" class="btn">Publicar avaliação</button>
+            <button type="submit" class="btn">Publicar avalia&ccedil;&atilde;o</button>
         </form>
+        {% else %}
+        <div class="review-locked-message">
+            <i class="fas fa-lock"></i>
+            <div>
+                <strong>Avalia&ccedil;&atilde;o verificada</strong>
+                <p>Somente clientes logados que compraram este produto podem publicar uma avalia&ccedil;&atilde;o.</p>
+                {% if not session.get("user_id") %}
+                <a href="{{ url_for('login', next=request.path) }}" class="btn secondary">Entrar para verificar compra</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
     </div>
 </section>
 

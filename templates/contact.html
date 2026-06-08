@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Contato - {{ store_name }}{% endblock %}
+
+{% block content %}
+<section class="institutional-page contact-page">
+    <div class="institutional-hero">
+        <span class="section-eyebrow">Atendimento</span>
+        <h1>Fale com a {{ store_name }}</h1>
+        <p>Envie sua dúvida sobre produtos, pedidos, lentes, medidas ou atendimento. O retorno será feito pelo e-mail informado.</p>
+    </div>
+
+    <div class="contact-grid">
+        <form method="POST" class="contact-form">
+            <div>
+                <label for="name">Nome</label>
+                <input type="text" id="name" name="name" value="{{ session.get('user_name', '') }}" required>
+            </div>
+
+            <div>
+                <label for="email">E-mail</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+
+            <div>
+                <label for="subject">Assunto</label>
+                <input type="text" id="subject" name="subject" placeholder="Ex.: dúvida sobre lente RX" required>
+            </div>
+
+            <div>
+                <label for="message">Mensagem</label>
+                <textarea id="message" name="message" rows="6" required></textarea>
+            </div>
+
+            <button type="submit" class="btn full">Enviar mensagem</button>
+        </form>
+
+        <aside class="contact-card">
+            <h2>Canais oficiais</h2>
+            <p><strong>E-mail:</strong> {{ store_email }}</p>
+            <p><strong>WhatsApp:</strong> atendimento comercial e pós-venda.</p>
+            <p><strong>Redes sociais:</strong> novidades, campanhas e lançamentos.</p>
+            <div class="product-trust-seals vertical">
+                <span><i class="fas fa-lock"></i> Dados protegidos</span>
+                <span><i class="fas fa-headset"></i> Atendimento registrado</span>
+                <span><i class="fas fa-rotate-left"></i> Suporte para troca e devolução</span>
+            </div>
+        </aside>
+    </div>
+</section>
+{% endblock %}
+

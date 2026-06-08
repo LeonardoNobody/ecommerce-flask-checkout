@@ -80,9 +80,10 @@
 
         {% if active_coupon %}
         <div class="summary-item coupon-line">
-            <span>Cupom {{ active_coupon.code }}</span>
+            <span>Cupom {{ active_coupon.code }} ({{ active_coupon.percent }}% OFF)</span>
             <strong>- R$ {{ "%.2f"|format(coupon_discount) }}</strong>
         </div>
+        <p class="coupon-saving">Desconto aplicado: R$ {{ "%.2f"|format(coupon_discount) }}</p>
         {% endif %}
 
         <div class="summary-item">
@@ -110,3 +111,4 @@
     }
 </script>
 {% endblock %}
+

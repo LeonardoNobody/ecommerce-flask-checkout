@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Carrinho - LojaFácil{% endblock %}
+{% block title %}Carrinho - VistaPrime{% endblock %}
 
 {% block content %}
 <section class="cart-page-header">
@@ -31,7 +31,7 @@
                     <span class="product-category">{{ item.category }}</span>
                     <h3>{{ item.name }}</h3>
                     <p>Preço unitário: <strong>R$ {{ "%.2f"|format(item.price) }}</strong></p>
-                    <p>Estoque disponível: <strong>{{ item.stock }}</strong></p>
+                    <p>Dispon&iacute;vel para compra</p>
                 </div>
 
                 <div class="cart-quantity-box">
@@ -72,9 +72,10 @@
 
         {% if active_coupon %}
         <div class="summary-item coupon-line">
-            <span>Cupom {{ active_coupon.code }}</span>
+            <span>Cupom {{ active_coupon.code }} ({{ active_coupon.percent }}% OFF)</span>
             <strong>- R$ {{ "%.2f"|format(coupon_discount) }}</strong>
         </div>
+        <p class="coupon-saving">Voce economizou R$ {{ "%.2f"|format(coupon_discount) }} neste pedido.</p>
         {% endif %}
 
         <div class="summary-total">
@@ -89,12 +90,12 @@
                     type="text"
                     id="coupon_code"
                     name="coupon_code"
-                    placeholder="Ex.: LOJA10"
+                    placeholder="Ex.: VISTA10"
                     value="{{ active_coupon.code if active_coupon else '' }}"
                 >
                 <button type="submit" class="btn secondary">Aplicar</button>
             </div>
-            <small>Para demonstração, use LOJA10.</small>
+            <small>Use VISTA10 para aplicar 10% de desconto no pedido.</small>
         </form>
 
         <div class="cart-next-steps">
@@ -104,7 +105,7 @@
             </div>
             <div>
                 <i class="fas fa-shield-halved"></i>
-                <span>Pagamento simulado e seguro</span>
+                <span>Pagamento seguro</span>
             </div>
         </div>
 
@@ -120,3 +121,4 @@
 </div>
 {% endif %}
 {% endblock %}
+

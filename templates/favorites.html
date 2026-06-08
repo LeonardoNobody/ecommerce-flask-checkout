@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Favoritos - LojaFácil{% endblock %}
+{% block title %}Favoritos - VistaPrime{% endblock %}
 
 {% block content %}
 <section class="wishlist-header">
@@ -29,7 +29,7 @@
     <div>
         <i class="fas fa-ticket"></i>
         <strong>Cupom</strong>
-        <span>Use LOJA10 no carrinho</span>
+        <span>Use VISTA10 no carrinho</span>
     </div>
 </section>
 
@@ -48,7 +48,7 @@
             <p>{{ product.short_description }}</p>
             <div class="wishlist-meta">
                 <strong>R$ {{ "%.2f"|format(product.price) }}</strong>
-                <span>{{ product.stock }} em estoque</span>
+                <span>Dispon&iacute;vel para compra</span>
             </div>
             <div class="product-actions-list">
                 <a href="{{ url_for('add_to_cart', product_id=product.id) }}" class="btn" data-add-to-cart>Adicionar ao carrinho</a>
@@ -67,3 +67,4 @@
 </div>
 {% endif %}
 {% endblock %}
+

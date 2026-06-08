@@ -1,4 +1,13 @@
+import os
+
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
+
+
 class Config:
-    SECRET_KEY = "chave_secreta_ecommerce_faculdade"
-    SQLALCHEMY_DATABASE_URI = "sqlite:///ecommerce.db"
+    SECRET_KEY = os.environ.get("SECRET_KEY") or "dev-insecure-change-me"
+    SQLALCHEMY_DATABASE_URI = os.environ.get("DATABASE_URL") or "sqlite:///ecommerce.db"
     SQLALCHEMY_TRACK_MODIFICATIONS = False

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Meus Pedidos - LojaFácil{% endblock %}
+{% block title %}Meus Pedidos - VistaPrime{% endblock %}
 
 {% block content %}
 <div class="orders-header">
@@ -50,7 +50,15 @@
                 </div>
                 <div class="summary-item">
                     <span>Pagamento</span>
-                    <strong>{{ "Cartão de crédito" if order.payment_method == "cartao" else "Boleto bancário" }}</strong>
+                    <strong>
+                        {% if order.payment_method == "cartao" %}
+                            Cart&atilde;o de cr&eacute;dito
+                        {% elif order.payment_method == "pix" %}
+                            Pix
+                        {% else %}
+                            Boleto banc&aacute;rio
+                        {% endif %}
+                    </strong>
                 </div>
                 <div class="summary-item">
                     <span>Status</span>
@@ -223,3 +231,4 @@
     });
 </script>
 {% endblock %}
+

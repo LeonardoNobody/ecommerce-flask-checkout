@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}LojaFácil{% endblock %}</title>
+    <title>{% block title %}{{ store_name }}{% endblock %}</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
@@ -14,7 +14,7 @@
     <header class="site-header">
         <div class="container nav-shell">
             <div class="nav-top">
-                <a href="{{ url_for('index') }}" class="brand"><span>Loja</span>F&aacute;cil</a>
+                <a href="{{ url_for('index') }}" class="brand"><span>Vista</span>Prime</a>
 
                 <form method="GET" action="{{ url_for('index') }}" class="nav-search">
                     <i class="fas fa-search"></i>
@@ -39,6 +39,9 @@
                 <nav class="main-nav">
                     <a href="{{ url_for('index') }}">In&iacute;cio</a>
                     <a href="{{ url_for('index') }}#produtos">Produtos</a>
+                    <a href="{{ url_for('about') }}">Quem somos</a>
+                    <a href="{{ url_for('faq') }}">FAQ</a>
+                    <a href="{{ url_for('contact') }}">Contato</a>
                     <a href="{{ url_for('orders') if session.get('user_id') else url_for('login') }}">Pedidos</a>
                     <a href="{{ url_for('profile') if session.get('user_id') else url_for('login') }}">Minha conta</a>
                 </nav>
@@ -97,8 +100,8 @@
                 <strong id="cartDrawerSubtotal">R$ {{ "%.2f"|format(mini_cart_total) }}</strong>
             </div>
             <div class="drawer-coupon {% if not mini_active_coupon %}empty-hidden{% endif %}" id="cartDrawerCoupon">
-                <span>Cupom {{ mini_active_coupon.code }}</span>
-                <strong>aplicado</strong>
+                <span>Cupom {{ mini_active_coupon.code }} - {{ mini_active_coupon.percent }}% OFF</span>
+                <strong>- R$ {{ "%.2f"|format(mini_coupon_discount) }}</strong>
             </div>
             <div class="drawer-total">
                 <span>Total</span>
@@ -133,6 +136,42 @@
             {% block content %}{% endblock %}
         </div>
     </main>
+
+    <footer class="site-footer">
+        <div class="container footer-grid">
+            <div>
+                <a href="{{ url_for('index') }}" class="footer-brand"><span>Vista</span>Prime</a>
+                <p>&Oacute;tica online com compra segura, produtos selecionados, fotos por &acirc;ngulo e atendimento para ajudar na escolha do seu pr&oacute;ximo &oacute;culos.</p>
+                <div class="footer-social">
+                    <a href="https://www.instagram.com/" target="_blank" rel="noopener" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://wa.me/5511999999999" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                    <a href="{{ url_for('contact') }}" aria-label="Contato por e-mail"><i class="fas fa-envelope"></i></a>
+                </div>
+            </div>
+            <div>
+                <h3>Institucional</h3>
+                <a href="{{ url_for('about') }}">Quem somos</a>
+                <a href="{{ url_for('faq') }}">FAQ</a>
+                <a href="{{ url_for('contact') }}">Contato</a>
+                <a href="{{ url_for('terms') }}">Termos de Servi&ccedil;o</a>
+                <a href="{{ url_for('privacy') }}">Pol&iacute;tica de Privacidade</a>
+            </div>
+            <div>
+                <h3>Compra segura</h3>
+                <span><i class="fas fa-lock"></i> Ambiente protegido</span>
+                <span><i class="fas fa-rotate-left"></i> Trocas e devolu&ccedil;&otilde;es</span>
+                <span><i class="fas fa-truck-fast"></i> C&aacute;lculo de frete</span>
+                <span><i class="fas fa-credit-card"></i> Cart&atilde;o, Pix e boleto</span>
+            </div>
+        </div>
+        <div class="container trust-seals" aria-label="Certifica&ccedil;&otilde;es e garantias da loja">
+            <span><i class="fas fa-shield-halved"></i><strong>Site protegido</strong><small>Conex&atilde;o segura</small></span>
+            <span><i class="fas fa-certificate"></i><strong>Loja verificada</strong><small>Dados conferidos</small></span>
+            <span><i class="fab fa-google"></i><strong>Compra confi&aacute;vel</strong><small>Boa reputa&ccedil;&atilde;o</small></span>
+            <span><i class="fas fa-gem"></i><strong>Produtos selecionados</strong><small>Curadoria VistaPrime</small></span>
+            <span><i class="fas fa-star"></i><strong>Excelente</strong><small>Avalia&ccedil;&otilde;es verificadas</small></span>
+        </div>
+    </footer>
 
     <script>
         function closeCartDrawer() {
@@ -177,7 +216,8 @@
             const coupon = document.getElementById("cartDrawerCoupon");
             coupon.classList.toggle("empty-hidden", !data.active_coupon);
             if (data.active_coupon) {
-                coupon.querySelector("span").textContent = `Cupom ${data.active_coupon.code}`;
+                coupon.querySelector("span").textContent = `Cupom ${data.active_coupon.code} - ${data.active_coupon.percent}% OFF`;
+                coupon.querySelector("strong").textContent = `- ${data.coupon_discount_formatted}`;
             }
 
             toast.textContent = data.message || "Carrinho atualizado.";
@@ -212,3 +252,5 @@
     </script>
 </body>
 </html>
+
+

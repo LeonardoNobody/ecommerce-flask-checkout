@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}LojaF&aacute;cil - &Oacute;culos, Lentes e Acess&oacute;rios{% endblock %}
+{% block title %}VistaPrime - &Oacute;culos, Lentes e Acess&oacute;rios{% endblock %}
 
 {% block content %}
 <section class="store-hero optical-hero">
@@ -219,8 +219,9 @@
                 </a>
 
                 <div class="product-spec-row">
+                    <span><i class="fas fa-glasses"></i> {{ product.optical_specs.lens_type }}</span>
                     <span><i class="fas fa-check"></i> Pronta entrega</span>
-                    <span><i class="fas fa-box-open"></i> Estoque: {{ product.stock }}</span>
+                    <span><i class="fas fa-box-open"></i> Pronto para envio</span>
                 </div>
 
                 <span class="price">R$ {{ "%.2f"|format(product.price) }}</span>
@@ -251,3 +252,4 @@
     {% endif %}
 </section>
 {% endblock %}
+

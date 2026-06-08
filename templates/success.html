@@ -114,9 +114,22 @@
                 </div>
 
                 <div class="boleto-alert">
-                    <p>Este boleto é ilustrativo e foi gerado para fins de apresentação acadêmica.</p>
-                    <p>Não possui registro bancário real nem validade para pagamento.</p>
+                    <p>Confira os dados antes de realizar o pagamento.</p>
+                    <p>O pedido ser&aacute; processado ap&oacute;s a confirma&ccedil;&atilde;o.</p>
                 </div>
+            </div>
+        </div>
+    {% elif order["payment"]["method"] == "pix" %}
+        <div class="payment-result boleto-box">
+            <h3>Pix</h3>
+            <p><strong>Benefici&aacute;rio:</strong> {{ order["payment"]["beneficiary"] }}</p>
+            <p><strong>Status:</strong> {{ order["payment"]["status"] }}</p>
+            <div class="barcode-area">
+                <span class="label">Pix copia e cola</span>
+                <div class="barcode-line" id="pixLine">{{ order["payment"]["pix_code"] }}</div>
+                <button class="btn secondary" type="button" onclick="copyPix()">
+                    Copiar Pix
+                </button>
             </div>
         </div>
     {% endif %}
@@ -143,5 +156,13 @@
             alert("Código do boleto copiado com sucesso!");
         });
     }
+
+    function copyPix() {
+        const pix = document.getElementById("pixLine").innerText;
+        navigator.clipboard.writeText(pix).then(() => {
+            alert("C&oacute;digo Pix copiado com sucesso!");
+        });
+    }
 </script>
 {% endblock %}
+
