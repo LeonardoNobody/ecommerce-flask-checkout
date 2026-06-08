@@ -50,7 +50,7 @@ PRODUCTS = [
     {
         "id": 2,
         "name": "Flanela Mágica",
-        "price": 50.90,
+        "price": 23.90,
         "image": "lencomagico.png",
         "short_description": "Flanela prática e reutilizável para limpeza de lentes e telas.",
         "description": (
@@ -65,7 +65,7 @@ PRODUCTS = [
     {
         "id": 3,
         "name": "Ray-Ban Meta Wayfarer - Gen 2",
-        "price": 3029.90,
+        "price": 3299.90,
         "image": "meta foto1.png",
         "short_description": "Óculos inteligente com câmera, áudio e comandos por voz.",
         "description": (
@@ -89,7 +89,7 @@ PRODUCTS = [
     {
         "id": 5,
         "name": "Lens Wipes",
-        "price": 115.90,
+        "price": 89.90,
         "image": "lens wipes foto1.png",
         "short_description": "Lenços umedecidos para limpeza rápida e segura de lentes.",
         "description": (
@@ -103,7 +103,7 @@ PRODUCTS = [
     {
         "id": 6,
         "name": "Solar Wayfarer Preto",
-        "price": 349.90,
+        "price": 999.90,
         "image": "solar-wayfarer-preto.jpg",
         "short_description": "Óculos solar preto com formato wayfarer e lentes escuras.",
         "description": (
@@ -116,7 +116,7 @@ PRODUCTS = [
     {
         "id": 7,
         "name": "Solar Wayfarer Vinho",
-        "price": 329.90,
+        "price": 899.90,
         "image": "solar-wayfarer-vinho.jpg",
         "short_description": "Modelo wayfarer em tom vinho com lentes degradê.",
         "description": (
@@ -129,7 +129,7 @@ PRODUCTS = [
     {
         "id": 8,
         "name": "Solar Wayfarer Azul",
-        "price": 319.90,
+        "price": 899.90,
         "image": "solar-wayfarer-azul.jpg",
         "short_description": "Óculos solar azul com visual casual e lentes escuras.",
         "description": (
@@ -142,7 +142,7 @@ PRODUCTS = [
     {
         "id": 9,
         "name": "Armação Retangular Vinho",
-        "price": 289.90,
+        "price": 329.90,
         "image": "armacao-retangular-vinho.jpg",
         "short_description": "Armação retangular em tom vinho para lentes de grau.",
         "description": (
@@ -155,7 +155,7 @@ PRODUCTS = [
     {
         "id": 10,
         "name": "Armação Retangular Preta Fina",
-        "price": 259.90,
+        "price": 329.90,
         "image": "armacao-retangular-preta-fina.jpg",
         "short_description": "Armação preta leve com desenho retangular discreto.",
         "description": (
@@ -168,7 +168,7 @@ PRODUCTS = [
     {
         "id": 11,
         "name": "Armação Metal Dourada",
-        "price": 299.90,
+        "price": 349.90,
         "image": "armacao-metal-dourada.jpg",
         "short_description": "Armação metálica dourada com visual leve e sofisticado.",
         "description": (
@@ -181,7 +181,7 @@ PRODUCTS = [
     {
         "id": 12,
         "name": "Ray-Ban Meta Wayfarer - Gen 2 Preto",
-        "price": 3029.90,
+        "price": 3299.90,
         "image": "armacao-retangular-preta-bold.jpg",
         "short_description": "Óculos inteligente com câmera, áudio, comandos por voz e estojo carregador.",
         "description": (
@@ -195,7 +195,7 @@ PRODUCTS = [
     {
         "id": 13,
         "name": "Aviador Verde Clássico",
-        "price": 429.90,
+        "price": 899.90,
         "image": "aviador-verde-classico.jpg",
         "short_description": "Óculos aviador com lentes verdes e armação metálica.",
         "description": (
@@ -208,7 +208,7 @@ PRODUCTS = [
     {
         "id": 14,
         "name": "Aviador Degradê Dourado",
-        "price": 459.90,
+        "price": 949.90,
         "image": "aviador-degrade-dourado.jpg",
         "short_description": "Aviador dourado com lentes degradê para uso diário.",
         "description": (
@@ -221,7 +221,7 @@ PRODUCTS = [
     {
         "id": 15,
         "name": "Dolce & Gabbana DG4501 501/8G",
-        "price": 1199.90,
+        "price": 1699.90,
         "image": "solar-square-preto-luxo.jpg",
         "short_description": "Óculos de sol Dolce & Gabbana em acetato preto com lentes cinza degradê.",
         "description": (
@@ -235,7 +235,7 @@ PRODUCTS = [
     {
         "id": 16,
         "name": "Solar Oval Preto",
-        "price": 389.90,
+        "price": 1110.00,
         "image": "solar-oval-preto.jpg",
         "short_description": "Óculos solar oval preto com perfil retrô.",
         "description": (
@@ -248,7 +248,7 @@ PRODUCTS = [
     {
         "id": 17,
         "name": "Swarovski SK6005 1001/8G",
-        "price": 799.90,
+        "price": 1290.00,
         "image": "solar-cat-eye-preto.jpg",
         "short_description": "Óculos de sol Swarovski preto com lentes cinza degradê.",
         "description": (
@@ -262,7 +262,7 @@ PRODUCTS = [
     {
         "id": 18,
         "name": "Solar Cat Eye Marrom",
-        "price": 419.90,
+        "price": 1290.00,
         "image": "solar-cat-eye-marrom.jpg",
         "short_description": "Modelo gatinho marrom com lentes em tom quente.",
         "description": (
@@ -275,7 +275,7 @@ PRODUCTS = [
     {
         "id": 19,
         "name": "Prada SPR A51 ZVN-30C",
-        "price": 1699.90,
+        "price": 2399.90,
         "image": "solar-retangular-rimless.jpg",
         "short_description": "Óculos de sol Prada em metal dourado com lentes degradê.",
         "description": (
@@ -289,7 +289,7 @@ PRODUCTS = [
     {
         "id": 20,
         "name": "Solar Slim Retangular Preto",
-        "price": 359.90,
+        "price": 2199.90,
         "image": "solar-slim-retangular-preto.jpg",
         "short_description": "Óculos solar slim retangular com armação preta.",
         "description": (
@@ -302,7 +302,7 @@ PRODUCTS = [
     {
         "id": 21,
         "name": "Miu Miu SMU 04Z 19P-2Z1",
-        "price": 1499.90,
+        "price": 2299.90,
         "image": "solar-round-tartaruga.jpg",
         "short_description": "Óculos Miu Miu oval em havana claro com lentes marrons.",
         "description": (
@@ -316,7 +316,7 @@ PRODUCTS = [
     {
         "id": 22,
         "name": "Miu Miu SMU A04 16K-08Z",
-        "price": 1599.90,
+        "price": 2599.90,
         "image": "solar-oval-detalhe-dourado.jpg",
         "short_description": "Óculos Miu Miu cat eye preto com detalhe dourado nas hastes.",
         "description": (
@@ -330,7 +330,7 @@ PRODUCTS = [
     {
         "id": 23,
         "name": "Versace VE 4479-U GB1/87",
-        "price": 1299.90,
+        "price": 1289.90,
         "image": "solar-square-medusa-preto.jpg",
         "short_description": "Óculos Versace quadrado preto com lentes cinza.",
         "description": (
@@ -344,7 +344,7 @@ PRODUCTS = [
     {
         "id": 24,
         "name": "Versace VE 4479-U 148/80",
-        "price": 1299.90,
+        "price": 1289.90,
         "image": "solar-cristal-retangular.jpg",
         "short_description": "Óculos Versace cristal com lentes azuis e detalhe Medusa Biggie.",
         "description": (
