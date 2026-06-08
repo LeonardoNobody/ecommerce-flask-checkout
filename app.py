@@ -1329,6 +1329,20 @@ Equipe {STORE_NAME}
     return send_customer_email(order.customer_email, f"Pedido {order.order_number} confirmado - {STORE_NAME}", body)
 
 
+def validate_password_strength(password):
+    requirements = [
+        (len(password) >= 8, "mínimo de 8 caracteres"),
+        (any(char.islower() for char in password), "uma letra minúscula"),
+        (any(char.isupper() for char in password), "uma letra maiúscula"),
+        (any(char.isdigit() for char in password), "um número"),
+        (any(not char.isalnum() for char in password), "um caractere especial"),
+    ]
+    missing = [label for valid, label in requirements if not valid]
+    if missing:
+        return False, "A senha deve conter " + ", ".join(missing) + "."
+    return True, ""
+
+
 @app.context_processor
 def inject_cart_drawer():
     mini_cart_items, mini_cart_total = calculate_cart_details()
@@ -2072,6 +2086,11 @@ def register():
             flash("As senhas não coincidem.", "error")
             return redirect(url_for("register"))
 
+        password_is_valid, password_message = validate_password_strength(password)
+        if not password_is_valid:
+            flash(password_message, "error")
+            return redirect(url_for("register"))
+
         existing_user = User.query.filter_by(email=email).first()
         if existing_user:
             flash("Já existe um usuário com esse e-mail.", "error")
@@ -2179,8 +2198,9 @@ def reset_password(token):
             flash("Preencha a nova senha e a confirmação.", "error")
             return redirect(url_for("reset_password", token=token))
 
-        if len(password) < 8:
-            flash("A senha deve ter pelo menos 8 caracteres.", "error")
+        password_is_valid, password_message = validate_password_strength(password)
+        if not password_is_valid:
+            flash(password_message, "error")
             return redirect(url_for("reset_password", token=token))
 
         if password != confirm_password:
