@@ -37,13 +37,45 @@
 
         <aside class="contact-card">
             <h2>Canais oficiais</h2>
-            <p><strong>E-mail:</strong> {{ store_email }}</p>
-            <p><strong>WhatsApp:</strong> atendimento comercial e pós-venda.</p>
-            <p><strong>Redes sociais:</strong> novidades, campanhas e lançamentos.</p>
+            <p>Escolha o canal mais pr&aacute;tico para falar com a nossa equipe.</p>
+
+            <div class="contact-channel-list">
+                <a href="https://wa.me/5511999999999?text=Ol%C3%A1%2C%20vim%20pelo%20site%20VistaPrime%20%C3%93tica%20e%20preciso%20de%20atendimento."
+                   target="_blank"
+                   rel="noopener"
+                   class="contact-channel whatsapp">
+                    <i class="fab fa-whatsapp"></i>
+                    <span>
+                        <strong>WhatsApp</strong>
+                        Atendimento comercial e p&oacute;s-venda
+                    </span>
+                </a>
+
+                <a href="https://www.instagram.com/"
+                   target="_blank"
+                   rel="noopener"
+                   class="contact-channel instagram">
+                    <i class="fab fa-instagram"></i>
+                    <span>
+                        <strong>Instagram</strong>
+                        Novidades, campanhas e lan&ccedil;amentos
+                    </span>
+                </a>
+
+                <a href="mailto:{{ store_email }}?subject=Atendimento%20VistaPrime%20%C3%93tica"
+                   class="contact-channel email">
+                    <i class="fas fa-envelope"></i>
+                    <span>
+                        <strong>E-mail</strong>
+                        {{ store_email }}
+                    </span>
+                </a>
+            </div>
+
             <div class="product-trust-seals vertical">
                 <span><i class="fas fa-lock"></i> Dados protegidos</span>
                 <span><i class="fas fa-headset"></i> Atendimento registrado</span>
-                <span><i class="fas fa-rotate-left"></i> Suporte para troca e devolução</span>
+                <span><i class="fas fa-rotate-left"></i> Suporte para troca e devolu&ccedil;&atilde;o</span>
             </div>
         </aside>
     </div>

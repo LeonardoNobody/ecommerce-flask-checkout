@@ -2931,6 +2931,67 @@ body {
     margin-top: 0;
 }
 
+.contact-channel-list {
+    display: grid;
+    gap: 12px;
+    margin: 18px 0 20px;
+}
+
+.contact-channel {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px;
+    border: 1px solid #dbe4f0;
+    border-radius: 8px;
+    background: #f8fafc;
+    color: #0f172a;
+    text-decoration: none;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.contact-channel:hover {
+    transform: translateY(-1px);
+    border-color: #93c5fd;
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+}
+
+.contact-channel i {
+    width: 44px;
+    height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    border-radius: 999px;
+    color: #ffffff;
+    font-size: 20px;
+}
+
+.contact-channel.whatsapp i {
+    background: #16a34a;
+}
+
+.contact-channel.instagram i {
+    background: linear-gradient(135deg, #f97316, #db2777, #4f46e5);
+}
+
+.contact-channel.email i {
+    background: #2563eb;
+}
+
+.contact-channel span {
+    display: grid;
+    gap: 3px;
+    color: #475569;
+    line-height: 1.35;
+}
+
+.contact-channel strong {
+    color: #0f172a;
+    font-size: 1rem;
+}
+
 @media (max-width: 768px) {
     .legal-page {
         width: min(100% - 20px, 1080px);
