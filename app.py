@@ -4,8 +4,11 @@ from config import Config
 from extensions import db
 from flask import Flask, jsonify, render_template, session, redirect, url_for, request, flash
 from datetime import datetime, timedelta
+from email.message import EmailMessage
+from pathlib import Path
 import random
 import secrets
+import smtplib
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -1227,6 +1230,105 @@ def get_coupon_discount(total):
     return discount, {"code": coupon_code, **coupon}
 
 
+def persist_email_preview(to_email, subject, body):
+    outbox_dir = Path(app.instance_path) / "email_outbox"
+    outbox_dir.mkdir(parents=True, exist_ok=True)
+    safe_subject = "".join(char if char.isalnum() else "-" for char in subject.lower()).strip("-")[:42]
+    filename = f"{datetime.now().strftime('%Y%m%d-%H%M%S')}-{safe_subject or 'email'}.txt"
+    message = f"Para: {to_email}\nAssunto: {subject}\n\n{body}"
+    (outbox_dir / filename).write_text(message, encoding="utf-8")
+    return outbox_dir / filename
+
+
+def send_customer_email(to_email, subject, body):
+    sender = app.config.get("MAIL_DEFAULT_SENDER") or STORE_EMAIL
+    mail_server = app.config.get("MAIL_SERVER")
+
+    if not mail_server:
+        preview_path = persist_email_preview(to_email, subject, body)
+        app.logger.info("E-mail salvo localmente em %s", preview_path)
+        return False
+
+    message = EmailMessage()
+    message["Subject"] = subject
+    message["From"] = sender
+    message["To"] = to_email
+    message.set_content(body)
+
+    try:
+        with smtplib.SMTP(mail_server, app.config.get("MAIL_PORT", 587), timeout=12) as smtp:
+            if app.config.get("MAIL_USE_TLS", True):
+                smtp.starttls()
+            if app.config.get("MAIL_USERNAME") and app.config.get("MAIL_PASSWORD"):
+                smtp.login(app.config["MAIL_USERNAME"], app.config["MAIL_PASSWORD"])
+            smtp.send_message(message)
+        return True
+    except Exception as error:
+        preview_path = persist_email_preview(to_email, subject, body)
+        app.logger.warning("Falha ao enviar e-mail por SMTP (%s). Preview salvo em %s", error, preview_path)
+        return False
+
+
+def send_welcome_email(user):
+    body = f"""Olá, {user.name}!
+
+Sua conta na {STORE_NAME} foi criada com sucesso.
+
+Com sua conta, você pode:
+- favoritar produtos;
+- acompanhar seus pedidos;
+- salvar endereço para compras futuras;
+- receber confirmações de compra e atendimento.
+
+E-mail cadastrado: {user.email}
+
+Se você não realizou esse cadastro, entre em contato pelo e-mail {STORE_EMAIL}.
+
+Atenciosamente,
+Equipe {STORE_NAME}
+"""
+    return send_customer_email(user.email, f"Bem-vindo(a) à {STORE_NAME}", body)
+
+
+def send_order_confirmation_email(order, order_items, coupon=None, coupon_discount=0):
+    item_lines = []
+    for item in order_items:
+        item_lines.append(
+            f"- {item['quantity']}x {item['name']} | {format_currency(item['price'])} cada | "
+            f"Subtotal: {format_currency(item['subtotal'])}"
+        )
+
+    coupon_line = "Nenhum cupom aplicado"
+    if coupon:
+        coupon_line = f"{coupon['code']} ({coupon['percent']}% OFF): -{format_currency(coupon_discount)}"
+
+    body = f"""Olá, {order.customer_name}!
+
+Recebemos o seu pedido na {STORE_NAME}.
+
+Pedido: {order.order_number}
+Data: {order.created_at.strftime('%d/%m/%Y %H:%M')}
+Status do pagamento: {order.payment_status}
+Forma de pagamento: {order.payment_method.title()}
+Entrega: {order.shipping_type} ({format_currency(order.shipping_price)})
+
+Itens do pedido:
+{chr(10).join(item_lines)}
+
+Cupom/desconto: {coupon_line}
+Total do pedido: {format_currency(order.total)}
+
+Endereço de entrega:
+{order.customer_address}
+
+Você também pode acompanhar seus pedidos acessando sua conta na {STORE_NAME}.
+
+Atenciosamente,
+Equipe {STORE_NAME}
+"""
+    return send_customer_email(order.customer_email, f"Pedido {order.order_number} confirmado - {STORE_NAME}", body)
+
+
 @app.context_processor
 def inject_cart_drawer():
     mini_cart_items, mini_cart_total = calculate_cart_details()
@@ -1910,6 +2012,7 @@ def payment():
 
         db.session.add(order_record)
         db.session.commit()
+        send_order_confirmation_email(order_record, cart_items, active_coupon, coupon_discount)
 
         order = {
             "order_number": order_number,
@@ -1984,6 +2087,7 @@ def register():
 
         db.session.add(user)
         db.session.commit()
+        send_welcome_email(user)
 
         flash("Cadastro realizado com sucesso. Faça login.", "success")
         return redirect(url_for("login"))

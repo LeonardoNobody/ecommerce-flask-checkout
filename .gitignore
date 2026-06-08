@@ -6,3 +6,4 @@ __pycache__/
 Thumbs.db
 .codex_import/
 static/css/backup.css
+instance/email_outbox/

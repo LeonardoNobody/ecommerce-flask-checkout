@@ -56,6 +56,19 @@ Configure a variável de ambiente:
 SECRET_KEY=uma-chave-segura
 ```
 
+Para envio real de e-mails, configure também:
+
+```text
+MAIL_SERVER=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USE_TLS=true
+MAIL_USERNAME=seu-email@gmail.com
+MAIL_PASSWORD=sua-senha-de-app
+MAIL_DEFAULT_SENDER=seu-email@gmail.com
+```
+
+Sem essas variáveis, o sistema salva uma prévia dos e-mails em `instance/email_outbox`, útil para demonstração local.
+
 ## Observação
 
 Projeto criado para fins acadêmicos. Pagamentos, autenticações externas e integrações reais são simulados.
